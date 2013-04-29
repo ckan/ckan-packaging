@@ -22,7 +22,6 @@
         - libxml2-dev
         - libxslt1-dev
         - build-essential
-        - bison
         - apache2
         - libapache2-mod-wsgi
         - nginx
