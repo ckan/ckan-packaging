@@ -11,7 +11,6 @@
     - name: make sure packages are installed
       action: apt pkg=$item state=installed
       with_items:
-        - htop
         - rubygems
         - python-virtualenv
         - python-setuptools
@@ -27,7 +26,6 @@
         - apache2
         - libapache2-mod-wsgi
         - nginx
-        - tomcat6
     - name: install fpm
       action: command gem install -v 0.4.21 fpm creates=/usr/bin/fpm
     - name: get ckan version
@@ -36,25 +34,15 @@
       action: easy_install name=pip
 
     - name: install requirements and make virtualenv
-      action: pip requirements=/usr/lib/ckan/src/ckan/pip-requirements.txt virtualenv=/usr/lib/ckan/ virtualenv_site_packages=yes
+      action: pip requirements=/usr/lib/ckan/src/ckan/pip-requirements.txt virtualenv=/usr/lib/ckan/
 
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/src/ckan/ ../../bin/python setup.py develop
-
-    - name: remove psycopg2
-      action: pip name=psycopg2 virtualenv=/usr/lib/ckan/ state=absent
-
-    - name: install supervisor
-      action: pip name=supervisor virtualenv=/usr/lib/ckan/
-
-    - name: remove old repo
-      action: file path=/var/www/ckan-repo state=absent
 
     - name: create directories
       action: file path=$item state=directory
       with_items:
         - /etc/ckan
-        - /var/www/ckan-repo
 
     - name: copy all needed files
       action: copy src=$item dest=/$item
@@ -64,11 +52,7 @@
         - etc/ckan/production.ini
         - etc/supervisord.conf
         - etc/apache2/conf.d/ckan.conf
-        - etc/apache2/conf.d/ckan-repo.conf
-        - etc/apache2/conf.d/ckan.conf
         - etc/cron.daily/remove_old_sessions
-        - etc/init/supervisor.conf
-        - var/lib/tomcat6/webapps/fgdc2iso.war
 
     - name: copy executables
       action: copy src=$item dest=/$item mode=744
@@ -83,7 +67,4 @@
       action: service name=apache2 state=restarted
 
     - name: build deb main
-      action: command chdir=/var/www/ckan-repo/ fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n ckan-2.0 --iteration $iteration -v $version -d postgresql -d nginx -d apache2 -d libapache2-mod-wsgi -d python-psycopg2 --config-files /etc/ckan/production.ini --config-files /etc/httpd/conf.d/ckan.conf /usr/bin/ckan /usr/lib/ckan/ /etc/ckan/ /etc/httpd/conf.d/ckan.conf /etc/nginx/conf.d/ckan.conf /etc/cron.daily/remove_old_sessions
-
-    - name: create repo
-      action: command createrepo /var/www/ckan-repo/
+      action: command fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n ckan-2.0 --iteration $iteration -v $version -d postgresql -d nginx -d apache2 -d libapache2-mod-wsgi --config-files /etc/ckan/production.ini --config-files /etc/apache2/conf.d/ckan.conf /usr/bin/ckan /usr/lib/ckan/ /etc/ckan/ /etc/nginx/conf.d/ckan.conf /etc/cron.daily/remove_old_sessions
