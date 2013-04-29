@@ -50,9 +50,8 @@
         - etc/ckan/who.ini
         - etc/ckan/apache.wsgi
         - etc/ckan/production.ini
-        - etc/supervisord.conf
         - etc/apache2/conf.d/ckan.conf
-        - etc/cron.daily/remove_old_sessions
+        - etc/nginx/config.d/ckan.conf
 
     - name: copy executables
       action: copy src=$item dest=/$item mode=744
