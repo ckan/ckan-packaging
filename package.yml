@@ -71,4 +71,4 @@
       action: service name=apache2 state=restarted
 
     - name: build deb main
-      action: command fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n ckan --iteration $iteration -v $version -d nginx -d apache2 -d libapache2-mod-wsgi --config-files /etc/ckan/production.ini --config-files /etc/apache2/conf.d/ckan.conf /usr/bin/ckan /usr/lib/ckan/ /etc/ckan/ /etc/nginx/sites-available/ckan /etc/cron.daily/remove_old_sessions
+      action: command fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n ckan --iteration $iteration -v $version -d nginx -d apache2 -d libapache2-mod-wsgi --config-files /etc/ckan/production.ini --config-files /etc/apache2/sites-available/ckan /usr/bin/ckan /usr/lib/ckan/ /etc/ckan/ /etc/nginx/sites-available/ckan /etc/cron.daily/remove_old_sessions
