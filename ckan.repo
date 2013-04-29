@@ -1,0 +1,7 @@
+[ckan]
+name=geodatagov
+baseurl=http://s084.okserver.org/packages/geodatagov/
+enabled=1
+gpgcheck=0
+protect=0
+
