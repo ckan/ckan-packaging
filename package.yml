@@ -26,7 +26,7 @@
         - libapache2-mod-wsgi
         - nginx
     - name: install fpm
-      action: command gem install -v 0.4.21 fpm creates=/usr/bin/fpm
+      action: command gem install -v 0.4.21 fpm creates=/usr/local/bin/fpm
     - name: get ckan version
       action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/src/ckan version=release-v${version}
     - name: get pip
@@ -38,6 +38,9 @@
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/src/ckan/ ../../bin/python setup.py develop
 
+    - name: create production.ini
+      action: command /usr/lib/ckan/bin/paster make-config ckan /etc/ckan/production.ini creates=/etc/ckan/production.ini
+
     - name: create directories
       action: file path=$item state=directory
       with_items:
@@ -48,9 +51,9 @@
       with_items:
         - etc/ckan/who.ini
         - etc/ckan/apache.wsgi
-        - etc/ckan/production.ini
         - etc/apache2/conf.d/ckan.conf
         - etc/nginx/conf.d/ckan.conf
+        - etc/cron.daily/remove_old_sessions
 
     - name: copy executables
       action: copy src=$item dest=/$item mode=744
@@ -62,4 +65,4 @@
       #action: service name=apache2 state=restarted
 
     - name: build deb main
-      action: command fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n ckan-2.0 --iteration $iteration -v $version -d postgresql -d nginx -d apache2 -d libapache2-mod-wsgi --config-files /etc/ckan/production.ini --config-files /etc/apache2/conf.d/ckan.conf /usr/bin/ckan /usr/lib/ckan/ /etc/ckan/ /etc/nginx/conf.d/ckan.conf /etc/cron.daily/remove_old_sessions
+      action: command fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n ckan --iteration $iteration -v $version -d nginx -d apache2 -d libapache2-mod-wsgi --config-files /etc/ckan/production.ini --config-files /etc/apache2/conf.d/ckan.conf /usr/bin/ckan /usr/lib/ckan/ /etc/ckan/ /etc/nginx/conf.d/ckan.conf /etc/cron.daily/remove_old_sessions
