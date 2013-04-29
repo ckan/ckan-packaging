@@ -52,7 +52,7 @@
         - etc/ckan/who.ini
         - etc/ckan/apache.wsgi
         - etc/apache2/sites-available/ckan
-        - etc/nginx/conf.d/ckan.conf
+        - etc/nginx/sites-available/ckan
         - etc/cron.daily/remove_old_sessions
 
     - name: copy executables
