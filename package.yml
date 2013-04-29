@@ -60,11 +60,8 @@
         - usr/bin/ckan
         - tmp/after_web.sh
 
-    - name: create superviserctl symlink
-      action: file src=/usr/lib/ckan/bin/supervisorctl dest=/usr/bin/supervisorctl state=link
-
-    - name: restart apache
-      action: service name=apache2 state=restarted
+    #- name: restart apache
+      #action: service name=apache2 state=restarted
 
     - name: build deb main
       action: command fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n ckan-2.0 --iteration $iteration -v $version -d postgresql -d nginx -d apache2 -d libapache2-mod-wsgi --config-files /etc/ckan/production.ini --config-files /etc/apache2/conf.d/ckan.conf /usr/bin/ckan /usr/lib/ckan/ /etc/ckan/ /etc/nginx/conf.d/ckan.conf /etc/cron.daily/remove_old_sessions
