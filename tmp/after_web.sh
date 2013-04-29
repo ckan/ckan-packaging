@@ -1,5 +1,6 @@
 #!/bin/bash
 
+cp --backup=numbered /etc/apache2/ports.conf /etc/apache2/ports.conf.preckan
 sed -i 's/^NameVirtualHost.*/NameVirtualHost *:8080/g' /etc/apache2/ports.conf
 sed -i 's/^Listen.*/Listen 8080/g' /etc/apache2/ports.conf
 
