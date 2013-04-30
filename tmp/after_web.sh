@@ -30,7 +30,7 @@ then
 	a2dissite default
 fi
 
-if [ -f /etc/apache2/sites-enabled/ckan ];
+if [ ! -f /etc/apache2/sites-enabled/ckan ];
 then
 	a2ensite ckan
 fi
