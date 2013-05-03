@@ -1,4 +1,4 @@
-#!/usr/lib/ckan/bin/python
+#!/usr/lib/ckan/default/bin/python
 import os
 import sys
 from pkg_resources import load_entry_point
@@ -21,10 +21,10 @@ for num, arg in enumerate(sys.argv):
 
 if not config:
     try:
-        config_file = '/etc/ckan/production.ini'
+        config_file = '/etc/ckan/default/production.ini'
         fh = open(config_file)
     except IOError as e:
-        raise Exception('No production.ini in /etc/ckan/. '
+        raise Exception('No production.ini in /etc/ckan/default. '
                         'Either create one from production.ini.temp or use '
                         '-i instance_name or -c config_file')
 

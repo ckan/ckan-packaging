@@ -28,26 +28,26 @@
     - name: install fpm
       action: command gem install -v 0.4.21 fpm creates=/usr/local/bin/fpm
     - name: get ckan version
-      action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/src/ckan version=release-v${version}
+      action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/default/src/ckan version=release-v${version}
     - name: get pip
       action: easy_install name=pip
 
     - name: install requirements and make virtualenv
-      action: pip requirements=/usr/lib/ckan/src/ckan/pip-requirements.txt virtualenv=/usr/lib/ckan/
+      action: pip requirements=/usr/lib/ckan/default/src/ckan/pip-requirements.txt virtualenv=/usr/lib/ckan/default/
 
     - name: run setup.py develop for ckan
-      action: command chdir=/usr/lib/ckan/src/ckan/ ../../bin/python setup.py develop
+      action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
 
     - name: create directories
       action: file path=$item state=directory
       with_items:
-        - /etc/ckan
+        - /etc/ckan/default
 
     - name: copy all needed files
       action: copy src=$item dest=/$item
       with_items:
-        - etc/ckan/who.ini
-        - etc/ckan/apache.wsgi
+        - etc/ckan/default/who.ini
+        - etc/ckan/default/apache.wsgi
         - etc/apache2/sites-available/ckan
         - etc/nginx/sites-available/ckan
         - etc/cron.daily/remove_old_sessions

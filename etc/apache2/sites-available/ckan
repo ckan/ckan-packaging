@@ -4,7 +4,7 @@ WSGISocketPrefix /var/run/wsgi
     ServerName localhost
 
     # this is our app
-    WSGIScriptAlias / /etc/ckan/apache.wsgi
+    WSGIScriptAlias / /etc/ckan/default/apache.wsgi
 
     # pass authorization info on (needed for rest api)
     WSGIPassAuthorization On

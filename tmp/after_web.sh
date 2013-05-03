@@ -4,11 +4,11 @@ cp --backup=numbered /etc/apache2/ports.conf /etc/apache2/ports.conf.preckan
 sed -i 's/^NameVirtualHost.*/NameVirtualHost *:8080/g' /etc/apache2/ports.conf
 sed -i 's/^Listen.*/Listen 8080/g' /etc/apache2/ports.conf
 
-if [ ! -f /etc/ckan/production.ini ];
+if [ ! -f /etc/ckan/default/production.ini ];
 then
-	/usr/lib/ckan/bin/paster make-config ckan /etc/ckan/production.ini
-	sed -i 's/^# ckan.site_id.*/ckan.site_id = ckan_instance/g' /etc/ckan/production.ini
-	sed -i 's/^args = ("ckan.log.*/args = ("\/var\/log\/ckan\/ckan.log", "a", 20000000, 9)/g' /etc/ckan/production.ini
+	/usr/lib/ckan/default/bin/paster make-config ckan /etc/ckan/default/production.ini
+	sed -i 's/^# ckan.site_id.*/ckan.site_id = ckan_instance/g' /etc/ckan/default/production.ini
+	sed -i 's/^args = ("ckan.log.*/args = ("\/var\/log\/ckan\/ckan.log", "a", 20000000, 9)/g' /etc/ckan/default/production.ini
 fi
 
 update-rc.d nginx defaults
