@@ -70,4 +70,4 @@
 #      action: file src=/etc/apache2/sites-available/ckan dest=/etc/apache2/sites-enabled/ckan state=link
 
     - name: build deb main
-      action: command fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n ckan --iteration $iteration -v $version -d nginx -d apache2 -d libapache2-mod-wsgi -d libpq5 --config-files /etc/apache2/sites-available/ckan --config-files /etc/nginx/sites-available/ckan /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan /etc/nginx/sites-available/ckan
+      action: command chdir=/var/www/ fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n ckan --iteration $iteration -v $version -d nginx -d apache2 -d libapache2-mod-wsgi -d libpq5 --config-files /etc/apache2/sites-available/ckan --config-files /etc/nginx/sites-available/ckan /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan /etc/nginx/sites-available/ckan
