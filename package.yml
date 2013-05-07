@@ -51,7 +51,7 @@
       with_items:
         - etc/ckan/default/who.ini
         - etc/ckan/default/apache.wsgi
-        - etc/apache2/sites-available/ckan
+        - etc/apache2/sites-available/ckan_default
         - etc/nginx/sites-available/ckan
         - etc/cron.daily/remove_old_sessions
 
@@ -62,4 +62,4 @@
         - tmp/after_web.sh
 
     - name: build deb main
-      action: command chdir=/var/www/ fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n python-ckan --iteration $iteration -v $version -d nginx -d apache2 -d libapache2-mod-wsgi -d libpq5 --config-files /etc/apache2/sites-available/ckan --config-files /etc/nginx/sites-available/ckan /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan /etc/nginx/sites-available/ckan
+      action: command chdir=/var/www/ fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n python-ckan --iteration $iteration -v $version -d nginx -d apache2 -d libapache2-mod-wsgi -d libpq5 --config-files /etc/apache2/sites-available/ckan --config-files /etc/nginx/sites-available/ckan /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan_default /etc/nginx/sites-available/ckan

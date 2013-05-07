@@ -28,9 +28,9 @@ then
 	a2dissite default
 fi
 
-if [ ! -f /etc/apache2/sites-enabled/ckan ];
+if [ ! -f /etc/apache2/sites-enabled/ckan_default ];
 then
-	a2ensite ckan
+	a2ensite ckan_default
 fi
 
 service apache2 restart
