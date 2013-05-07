@@ -25,15 +25,18 @@
         - apache2
         - libapache2-mod-wsgi
         - nginx
+
     - name: install fpm
       action: command gem install -v 0.4.21 fpm creates=/usr/local/bin/fpm
+
     - name: get ckan version
       action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/default/src/ckan version=release-v${version}
+
     - name: get pip
       action: easy_install name=pip
 
     - name: install requirements and make virtualenv
-      action: pip requirements=/usr/lib/ckan/default/src/ckan/pip-requirements.txt virtualenv=/usr/lib/ckan/default/
+      action: pip requirements=/usr/lib/ckan/default/src/ckan/pip-requirements.txt virtualenv=/usr/lib/ckan/default/ virtualenv_site_packages=yes
 
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
@@ -58,16 +61,5 @@
         - usr/bin/ckan
         - tmp/after_web.sh
 
-#    - name: run after_web.sh
-#      action: command /tmp/after_web.sh
-#
-#    - name: restart apache
-#      action: service name=apache2 state=restarted
-#
-
-
-#    - name: enable ckan virtualhost
-#      action: file src=/etc/apache2/sites-available/ckan dest=/etc/apache2/sites-enabled/ckan state=link
-
     - name: build deb main
-      action: command chdir=/var/www/ fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n ckan --iteration $iteration -v $version -d nginx -d apache2 -d libapache2-mod-wsgi -d libpq5 --config-files /etc/apache2/sites-available/ckan --config-files /etc/nginx/sites-available/ckan /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan /etc/nginx/sites-available/ckan
+      action: command chdir=/var/www/ fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n python-ckan --iteration $iteration -v $version -d nginx -d apache2 -d libapache2-mod-wsgi -d libpq5 --config-files /etc/apache2/sites-available/ckan --config-files /etc/nginx/sites-available/ckan /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan /etc/nginx/sites-available/ckan
