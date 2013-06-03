@@ -29,6 +29,12 @@
     - name: install fpm
       action: command gem install -v 0.4.21 fpm creates=/usr/local/bin/fpm
 
+    - name: delete old directories
+      action: file path=$item state=absent
+      with_items:
+        - /etc/ckan
+        - /usr/lib/ckan
+
     - name: get ckan version
       action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/default/src/ckan version=release-v${version}
 
