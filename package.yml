@@ -68,4 +68,17 @@
         - tmp/after_web.sh
 
     - name: build deb main
-      action: command chdir=/var/www/build fpm -t deb -s dir --description='CKAN package' --after-install=/tmp/after_web.sh -n python-ckan --iteration $iteration -v $version -d nginx -d apache2 -d libapache2-mod-wsgi -d libpq5 --config-files /etc/apache2/sites-available/ckan --config-files /etc/nginx/sites-available/ckan /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan_default /etc/nginx/sites-available/ckan
+      action: command chdir=/var/www/build fpm
+              -t deb -s dir
+              --name python-ckan
+              --description='CKAN is an open-source DMS (data management system) for powering data hubs and data portals.'
+              --license='AGPL v3.0'
+              --maintainer='Open Knowledge Foundation'
+              --vendor='Open Knowledge Foundation'
+              --url='http://ckan.org'
+              --after-install=/tmp/after_web.sh
+              --iteration $iteration
+              --version $version
+              --depends nginx --depends apache2 --depends libapache2-mod-wsgi --depends libpq5
+              --config-files /etc/apache2/sites-available/ckan --config-files /etc/nginx/sites-available/ckan
+              /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan_default /etc/nginx/sites-available/ckan
