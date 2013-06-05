@@ -73,7 +73,7 @@
               --name python-ckan
               --description='CKAN is an open-source DMS (data management system) for powering data hubs and data portals.'
               --license='AGPL v3.0'
-              --maintainer='Open Knowledge Foundation'
+              --maintainer='CKAN team <ckan-dev@lists.okfn.org>'
               --vendor='Open Knowledge Foundation'
               --url='http://ckan.org'
               --after-install=/tmp/after_web.sh
