@@ -33,5 +33,17 @@ then
 	a2ensite ckan_default
 fi
 
-service apache2 restart
-service nginx restart
+CKAN_INSTALL=/usr/lib/ckan/default
+
+for i in $CKAN_INSTALL/src/*
+do
+	if [ -f $i/pip-requirements.txt ];
+	then
+		$CKAN_INSTALL/bin/pip install -r $i/pip-requirements.txt 
+	fi
+	if [ -f $i/requirements.txt ];
+	then
+		$CKAN_INSTALL/bin/pip install -r $i/requirements.txt 
+	fi
+	$CKAN_INSTALL/bin/python  $i/setup.py develop
+done
