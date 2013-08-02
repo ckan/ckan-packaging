@@ -48,6 +48,10 @@ do
         then
             $CKAN_INSTALL/bin/pip install -r $i/requirements.txt
         fi
-        $CKAN_INSTALL/bin/python  $i/setup.py develop
+        if [ -f $i/setup.py ];
+        then
+            cd $i
+            $CKAN_INSTALL/bin/python  $i/setup.py develop
+        fi
     fi
 done
