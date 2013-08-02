@@ -42,7 +42,7 @@
       action: easy_install name=pip
 
     - name: install requirements and make virtualenv
-      action: pip requirements=/usr/lib/ckan/default/src/ckan/pip-requirements.txt virtualenv=/usr/lib/ckan/default/ virtualenv_site_packages=yes extra_args='--ignore-installed'
+      action: pip requirements=/usr/lib/ckan/default/src/ckan/pip-requirements.txt virtualenv=/usr/lib/ckan/default/ virtualenv_site_packages=no
 
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
