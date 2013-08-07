@@ -1,0 +1,101 @@
+---
+- hosts: build
+  vars_prompt:
+   - name: version
+     prompt: "Ckan Version"
+     private: False
+   - name: iteration
+     prompt: "Iteration"
+     private: False
+  tasks:
+    - name: install epel
+      action: command creates=/etc/yum.repos.d/epel.repo rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+
+    - name: make sure packages are installed
+      action: yum pkg=$item state=installed
+      with_items:
+        - rubygems
+        - python-virtualenv
+        - python-setuptools
+        - git
+        - python-devel
+        - ruby-devel
+        - postgresql-libs
+        - postgresql-devel
+        - libxml2-devel
+        - libxslt-devel
+        - rpmdevtools
+        - gcc
+        - gcc-c++
+        - make
+        - bison
+        - httpd
+        - createrepo
+        - mod_wsgi
+        - nginx
+        - cronie
+
+    - name: install fpm
+      action: command gem install -v 0.4.21 fpm creates=/usr/local/bin/fpm
+
+    - name: delete old directories
+      action: file path=$item state=absent
+      with_items:
+        - /etc/ckan
+        - /usr/lib/ckan
+
+    - name: pull ckan version
+      action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/default/src/ckan version=release-v${version}
+
+    - name: get pip
+      action: easy_install name=pip
+
+    - name: check requirements file name
+      shell: "[ -f /usr/lib/ckan/default/src/ckan/pip-requirements.txt ] && echo 'pip-requirements.txt' || echo 'requirements.txt'"
+      register: requirements_file_name
+
+    - name: install requirements and make virtualenv
+      action: pip requirements=/usr/lib/ckan/default/src/ckan/${requirements_file_name.stdout} virtualenv=/usr/lib/ckan/default/ virtualenv_site_packages=no
+
+    - name: run setup.py develop for ckan
+      action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
+
+    - name: create directories
+      action: file path=$item state=directory
+      with_items:
+        - /etc/ckan/default
+        - /var/www/build
+
+    - name: default apache removed
+      action: file path=/etc/httpd/conf.d/welcome.conf state=absent
+
+    - name: copy all needed files
+      action: copy src=$item dest=/$item
+      with_items:
+        - etc/ckan/default/who.ini
+        - etc/ckan/default/apache.wsgi
+        - etc/httpd/conf.d/ckan_default
+        - etc/nginx/conf.d/ckan
+        - etc/cron.daily/remove_old_sessions
+
+    - name: copy executables
+      action: copy src=$item dest=/$item mode=744
+      with_items:
+        - usr/bin/ckan
+        - tmp/after_web.sh
+
+    - name: build rpm main
+      action: command chdir=/var/www/build fpm
+              -t rpm -s dir
+              --name python-ckan
+              --description='CKAN is an open-source DMS (data management system) for powering data hubs and data portals.'
+              --license='AGPL v3.0'
+              --maintainer='CKAN team <ckan-dev@lists.okfn.org>'
+              --vendor='Open Knowledge Foundation'
+              --url='http://ckan.org'
+              --after-install=/tmp/after_web.sh
+              --iteration $iteration
+              --version $version
+              -d nginx -d httpd -d mod_wsgi -d cronie
+              --config-files /etc/httpd/conf.d/ckan_default --config-files /etc/nginx/conf.d/ckan
+              /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/httpd/conf.d/ckan_default /etc/nginx/conf.d/ckan
