@@ -74,8 +74,8 @@
       with_items:
         - etc/ckan/default/who.ini
         - etc/ckan/default/apache.wsgi
-        - etc/httpd/conf.d/ckan_default
-        - etc/nginx/conf.d/ckan
+        - etc/httpd/conf.d/ckan_default.conf
+        - etc/nginx/conf.d/ckan.conf
         - etc/cron.daily/remove_old_sessions
 
     - name: copy executables
@@ -97,5 +97,5 @@
               --iteration $iteration
               --version $version
               -d nginx -d httpd -d mod_wsgi -d cronie
-              --config-files /etc/httpd/conf.d/ckan_default --config-files /etc/nginx/conf.d/ckan
-              /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/httpd/conf.d/ckan_default /etc/nginx/conf.d/ckan
+              --config-files /etc/httpd/conf.d/ckan_default.conf --config-files /etc/nginx/conf.d/ckan.conf
+              /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/httpd/conf.d/ckan_default.conf /etc/nginx/conf.d/ckan.conf
