@@ -55,6 +55,7 @@
       action: file path=$item state=directory
       with_items:
         - /etc/ckan/default
+        - /var/www/build
 
     - name: copy all needed files
       action: copy src=$item dest=/$item
