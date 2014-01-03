@@ -36,7 +36,7 @@
         - /usr/lib/ckan
 
     - name: pull ckan version
-      action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/default/src/ckan version=release-v${version}
+      action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/default/src/ckan version=release-v{{ version }}
 
     - name: get pip
       action: easy_install name=pip
@@ -45,11 +45,17 @@
       shell: "[ -f /usr/lib/ckan/default/src/ckan/pip-requirements.txt ] && echo 'pip-requirements.txt' || echo 'requirements.txt'"
       register: requirements_file_name
 
-    - name: install requirements and make virtualenv
-      action: pip requirements=/usr/lib/ckan/default/src/ckan/${requirements_file_name.stdout} virtualenv=/usr/lib/ckan/default/ virtualenv_site_packages=no
+    - name: install requirements and make virtualenv for ckan
+      action: pip requirements=/usr/lib/ckan/default/src/ckan/{{ requirements_file_name.stdout }} virtualenv=/usr/lib/ckan/default/ virtualenv_site_packages=no
 
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
+
+    - name: install ckanserviceprovider and make virtualenv for datapusher
+      action: pip virtualenv=/usr/lib/ckan/datapusher/ virtualenv_site_packages=no name='git+https://github.com/okfn/ckanserviceprovider#egg=ckanserviceprovider'
+
+    - name: install datapusher
+      action: pip virtualenv=/usr/lib/ckan/datapusher/ virtualenv_site_packages=no name='git+https://github.com/okfn/datapusher#egg=datapusher'
 
     - name: create directories
       action: file path=$item state=directory
