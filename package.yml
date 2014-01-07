@@ -52,10 +52,13 @@
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
 
     - name: install ckanserviceprovider and make virtualenv for datapusher
-      action: pip virtualenv=/usr/lib/ckan/datapusher/ virtualenv_site_packages=no name='git+https://github.com/okfn/ckanserviceprovider#egg=ckanserviceprovider'
+      action: pip virtualenv=/usr/lib/ckan/datapusher/ virtualenv_site_packages=no name='git+https://github.com/okfn/ckan-service-provider#egg=ckanserviceprovider'
 
-    - name: install datapusher
-      action: pip virtualenv=/usr/lib/ckan/datapusher/ virtualenv_site_packages=no name='git+https://github.com/okfn/datapusher#egg=datapusher'
+    - name: pull datapusher
+      action: git dest=/usr/lib/ckan/datapusher/src/datapusher repo=https://github.com/okfn/datapusher
+
+    - name: run setup.py develop for datapusher
+      action: command chdir=/usr/lib/ckan/datapusher/src/datapusher/ ../../bin/python setup.py develop
 
     - name: create directories
       action: file path=$item state=directory
