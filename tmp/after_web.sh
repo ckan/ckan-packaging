@@ -55,3 +55,31 @@ do
         fi
     fi
 done
+
+# datapusher
+if [ ! -f /etc/apache2/sites-available/datapusher ];
+then
+	cp /usr/lib/ckan/datapusher/src/datapusher/deployment/datapusher /etc/apache2/sites-available/datapusher
+fi
+
+if [ ! -f /etc/apache2/sites-enabled/datapusher ];
+then
+	a2ensite datapusher
+fi
+
+if [ ! -f /etc/ckan/datapusher_settings.py ];
+then
+	cp /usr/lib/ckan/datapusher/src/datapusher/deployment/datapusher_settings.py /etc/ckan/
+fi
+
+cp /usr/lib/ckan/datapusher/src/datapusher/deployment/datapusher.wsgi /etc/ckan/
+
+if ! grep -Fxq 'NameVirtualHost *:8800' /etc/apache2/ports.conf
+then
+    echo "NameVirtualHost *:8800" >> /etc/apache2/ports.conf
+fi
+
+if ! grep -Fxq 'Listen 8800' /etc/apache2/ports.conf
+then
+    echo "Listen 8800" >> /etc/apache2/ports.conf
+fi
