@@ -1,8 +1,16 @@
 #!/bin/bash
 
 cp --backup=numbered /etc/apache2/ports.conf /etc/apache2/ports.conf.preckan
-sed -i 's/^NameVirtualHost.*/NameVirtualHost *:8080/g' /etc/apache2/ports.conf
-sed -i 's/^Listen.*/Listen 8080/g' /etc/apache2/ports.conf
+
+if grep -Fxq 'NameVirtualHost *:80' /etc/apache2/ports.conf
+then
+    sed -i 's/^NameVirtualHost \*\:80/NameVirtualHost *:8080/g' /etc/apache2/ports.conf
+fi
+
+if grep -Fxq 'Listen 80' /etc/apache2/ports.conf
+then
+    sed -i 's/^Listen 80/Listen 8080/g' /etc/apache2/ports.conf
+fi
 
 if [ ! -f /etc/ckan/default/production.ini ];
 then
