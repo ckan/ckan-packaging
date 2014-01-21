@@ -64,7 +64,7 @@ do
     fi
 done
 
-# datapusher
+{% if datapusher == 'y' %}
 if [ ! -f /etc/apache2/sites-available/datapusher ];
 then
 	cp /usr/lib/ckan/datapusher/src/datapusher/deployment/datapusher /etc/apache2/sites-available/datapusher
@@ -91,3 +91,4 @@ if ! grep -Fxq 'Listen 8800' /etc/apache2/ports.conf
 then
     echo "Listen 8800" >> /etc/apache2/ports.conf
 fi
+{% endif %}

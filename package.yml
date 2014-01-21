@@ -7,9 +7,13 @@
    - name: iteration
      prompt: "Iteration"
      private: False
+   - name: datapusher
+     prompt: "Enable datapusher (y/n)?"
+     default: "y"
+     private: false
   tasks:
     - name: make sure packages are installed
-      action: apt pkg=$item state=installed
+      action: apt pkg={{ item }} state=installed
       with_items:
         - rubygems
         - python-virtualenv
@@ -30,7 +34,7 @@
       action: command gem install -v 0.4.21 fpm creates=/usr/local/bin/fpm
 
     - name: delete old directories
-      action: file path=$item state=absent
+      action: file path={{ item }} state=absent
       with_items:
         - /etc/ckan
         - /usr/lib/ckan
@@ -51,23 +55,27 @@
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
 
+      # if datapusher needs to be setup
     - name: install ckanserviceprovider and make virtualenv for datapusher
       action: pip virtualenv=/usr/lib/ckan/datapusher/ virtualenv_site_packages=no name='git+https://github.com/okfn/ckan-service-provider#egg=ckanserviceprovider'
+      when: datapusher == 'y'
 
     - name: pull datapusher
       action: git dest=/usr/lib/ckan/datapusher/src/datapusher repo=https://github.com/okfn/datapusher
+      when: datapusher == 'y'
 
     - name: run setup.py develop for datapusher
       action: command chdir=/usr/lib/ckan/datapusher/src/datapusher/ ../../bin/python setup.py develop
+      when: datapusher == 'y'
 
     - name: create directories
-      action: file path=$item state=directory
+      action: file path={{ item }} state=directory
       with_items:
         - /etc/ckan/default
         - /var/www/build
 
     - name: copy all needed files
-      action: copy src=$item dest=/$item
+      action: copy src={{ item }} dest=/{{ item }}
       with_items:
         - etc/ckan/default/who.ini
         - etc/ckan/default/apache.wsgi
@@ -76,10 +84,12 @@
         - etc/cron.daily/remove_old_sessions
 
     - name: copy executables
-      action: copy src=$item dest=/$item mode=744
+      action: copy src={{ item }} dest=/{{ item }} mode=744
       with_items:
         - usr/bin/ckan
-        - tmp/after_web.sh
+
+    - name: template the after web script
+      action: template src=tmp/after_web.j2 dest=/tmp/after_web.sh mode=744
 
     - name: build deb main
       action: command chdir=/var/www/build fpm
@@ -91,8 +101,8 @@
               --vendor='Open Knowledge Foundation'
               --url='http://ckan.org'
               --after-install=/tmp/after_web.sh
-              --iteration $iteration
-              --version $version
+              --iteration {{ iteration }}
+              --version {{ version }}
               --depends nginx --depends apache2 --depends libapache2-mod-wsgi --depends libpq5
               --config-files /etc/apache2/sites-available/ckan_default --config-files /etc/nginx/sites-available/ckan
               /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan_default /etc/nginx/sites-available/ckan
