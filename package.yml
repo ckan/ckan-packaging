@@ -56,6 +56,10 @@
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
 
       # if datapusher needs to be setup
+    - name: install ckanserviceprovider and make virtualenv for datapusher
+      action: pip virtualenv=/usr/lib/ckan/datapusher/ virtualenv_site_packages=no name='git+https://github.com/okfn/ckan-service-provider#egg=ckanserviceprovider'
+      when: datapusher == 'y'
+
     - name: pull datapusher
       action: git dest=/usr/lib/ckan/datapusher/src/datapusher repo=https://github.com/okfn/datapusher
       when: datapusher == 'y'
