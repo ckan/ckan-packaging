@@ -82,8 +82,8 @@
     - name: build deb main
       action: command chdir=/var/www/build fpm
               -t deb -s dir
-              --name python-ckan
-              --description='CKAN is an open-source DMS (data management system) for powering data hubs and data portals.'
+              --name tsb-b2
+              --description='b2'
               --license='AGPL v3.0'
               --maintainer='CKAN team <ckan-dev@lists.okfn.org>'
               --vendor='Open Knowledge Foundation'
