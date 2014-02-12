@@ -7,10 +7,6 @@
    - name: iteration
      prompt: "Iteration"
      private: False
-   - name: datapusher
-     prompt: "Enable datapusher (y/n)?"
-     default: "y"
-     private: false
   tasks:
     - name: make sure packages are installed
       action: apt pkg={{ item }} state=installed
@@ -55,18 +51,10 @@
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
 
-      # if datapusher needs to be setup
-    - name: pull datapusher version
-      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=stable
-      when: datapusher == 'y'
+    - include: datapusher.yml datapusher=false
 
-    - name: install requirements and make virtualenv for datapusher
-      action: pip requirements=/usr/lib/ckan/datapusher/src/datapusher/requirements.txt virtualenv=/usr/lib/ckan/datapusher/ virtualenv_site_packages=no
-      when: datapusher == 'y'
-
-    - name: run setup.py develop for datapusher
-      action: command chdir=/usr/lib/ckan/datapusher/src/datapusher/ ../../bin/python setup.py develop
-      when: datapusher == 'y'
+    - name: install b2 extension
+      action: git repo=https://github.com/ckan/ckanext-b2 dest=/usr/lib/ckan/default/src/ckanext-b2 version=master
 
     - name: create directories
       action: file path={{ item }} state=directory

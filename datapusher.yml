@@ -1,0 +1,12 @@
+# if datapusher needs to be setup
+- name: pull datapusher version
+  action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=stable
+  when: datapusher == 'y'
+
+- name: install requirements and make virtualenv for datapusher
+  action: pip requirements=/usr/lib/ckan/datapusher/src/datapusher/requirements.txt virtualenv=/usr/lib/ckan/datapusher/ virtualenv_site_packages=no
+  when: datapusher == 'y'
+
+- name: run setup.py develop for datapusher
+  action: command chdir=/usr/lib/ckan/datapusher/src/datapusher/ ../../bin/python setup.py develop
+  when: datapusher == 'y'
