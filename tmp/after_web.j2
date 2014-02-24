@@ -15,7 +15,7 @@ fi
 if [ ! -f /etc/ckan/default/production.ini ];
 then
 	/usr/lib/ckan/default/bin/paster make-config ckan /etc/ckan/default/production.ini
-	sed -i s/^ckan.plugins.*/\&\ datastore\ datapusher\ b2/  /etc/ckan/default/production.ini
+	sed -i s/^ckan.plugins.*/\&\ downloadsdf\ b2/  /etc/ckan/default/production.ini
 fi
 
 update-rc.d nginx defaults

@@ -7,6 +7,10 @@
    - name: iteration
      prompt: "Iteration"
      private: False
+   - name: datapusher
+     prompt: "Enable datapusher (y/n)?"
+     default: "n"
+     private: false
   tasks:
     - name: make sure packages are installed
       action: apt pkg={{ item }} state=installed
@@ -36,7 +40,7 @@
         - /usr/lib/ckan
 
     - name: pull ckan version
-      action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/default/src/ckan version=release-v{{ version }}
+      action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/default/src/ckan version=b2
 
     - name: get pip
       action: easy_install name=pip
@@ -51,10 +55,17 @@
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
 
-    - include: datapusher.yml datapusher=false
-
     - name: install b2 extension
       action: git repo=https://github.com/ckan/ckanext-b2 dest=/usr/lib/ckan/default/src/ckanext-b2 version=master
+
+    - name: install requirements for b2
+      action: pip requirements=/usr/lib/ckan/default/src/ckanext-b2/requirements.txt virtualenv=/usr/lib/ckan/default
+
+    - name: install downloadsdf extension
+      action: git repo=https://github.com/ckan/ckanext-downloadsdf dest=/usr/lib/ckan/default/src/ckanext-downloadsdf version=master
+
+    - name: install requirements for downloadsdf
+      action: pip requirements=/usr/lib/ckan/default/src/ckanext-downloadsdf/requirements.txt virtualenv=/usr/lib/ckan/default
 
     - name: create directories
       action: file path={{ item }} state=directory
