@@ -1,16 +1,11 @@
 ---
-- hosts: build
+- hosts: all
   vars_prompt:
-   - name: version
-     prompt: "Ckan Version"
-     private: False
    - name: iteration
      prompt: "Iteration"
-     private: False
-   - name: datapusher
-     prompt: "Enable datapusher (y/n)?"
-     default: "n"
-     private: false
+     private: True 
+  vars:
+   datapusher: False
   tasks:
     - name: make sure packages are installed
       action: apt pkg={{ item }} state=installed
@@ -67,6 +62,12 @@
     - name: install requirements for downloadsdf
       action: pip requirements=/usr/lib/ckan/default/src/ckanext-downloadsdf/requirements.txt virtualenv=/usr/lib/ckan/default
 
+    - name: install simplecsvpreview extension
+      action: git repo=https://github.com/ckan/ckanext-simplecsvpreview dest=/usr/lib/ckan/default/src/ckanext-simplecsvpreview version=master
+
+#    - name: install requirements for downloadsdf
+#      action: pip requirements=/usr/lib/ckan/default/src/ckanext-downloadsdf/requirements.txt virtualenv=/usr/lib/ckan/default
+
     - name: create directories
       action: file path={{ item }} state=directory
       with_items:
@@ -91,9 +92,9 @@
       action: template src=tmp/after_web.j2 dest=/tmp/after_web.sh mode=744
 
     - name: build deb main
-      action: command chdir=/var/www/build fpm
+      action: command chdir=/vagrant fpm
               -t deb -s dir
-              --name tsb-b2
+              --name datapackager
               --description='b2'
               --license='AGPL v3.0'
               --maintainer='CKAN team <ckan-dev@lists.okfn.org>'
@@ -101,7 +102,7 @@
               --url='http://ckan.org'
               --after-install=/tmp/after_web.sh
               --iteration {{ iteration }}
-              --version {{ version }}
+              --version 1
               --depends nginx --depends apache2 --depends libapache2-mod-wsgi --depends libpq5
               --config-files /etc/apache2/sites-available/ckan_default --config-files /etc/nginx/sites-available/ckan
               /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan_default /etc/nginx/sites-available/ckan
