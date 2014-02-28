@@ -67,6 +67,8 @@
 
 #    - name: install requirements for downloadsdf
 #      action: pip requirements=/usr/lib/ckan/default/src/ckanext-downloadsdf/requirements.txt virtualenv=/usr/lib/ckan/default
+    - name: compile pyc
+      action: command /usr/lib/ckan/default/bin/python -m compileall /usr/lib/ckan/default/src
 
     - name: create directories
       action: file path={{ item }} state=directory
