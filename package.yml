@@ -107,7 +107,7 @@
               --url='http://ckan.org'
               --after-install=/tmp/after_web.sh
               --iteration {{ iteration }}
-              --version 1
+              --version 0.0.0
               --depends nginx --depends apache2 --depends libapache2-mod-wsgi --depends libpq5
               --config-files /etc/apache2/sites-available/ckan_default --config-files /etc/nginx/sites-available/ckan
               /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan_default /etc/nginx/sites-available/ckan
