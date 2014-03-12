@@ -38,7 +38,7 @@
         - /usr/lib/ckan
 
     - name: pull ckan version
-      action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/default/src/ckan version=b2
+      action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/default/src/ckan version=datapackager
 
     - name: get pip
       action: easy_install name=pip
@@ -53,11 +53,11 @@
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
 
-    - name: install b2 extension
-      action: git repo=https://github.com/ckan/ckanext-b2 dest=/usr/lib/ckan/default/src/ckanext-b2 version=master
+    - name: install datapackager extension
+      action: git repo=https://github.com/ckan/ckanext-datapackager dest=/usr/lib/ckan/default/src/ckanext-datapackager version=master
 
-    - name: install requirements for b2
-      action: pip requirements=/usr/lib/ckan/default/src/ckanext-b2/requirements.txt virtualenv=/usr/lib/ckan/default
+    - name: install requirements for datapackager
+      action: pip requirements=/usr/lib/ckan/default/src/ckanext-datapackager/requirements.txt virtualenv=/usr/lib/ckan/default
 
     - name: install downloadsdf extension
       action: git repo=https://github.com/ckan/ckanext-downloadsdf dest=/usr/lib/ckan/default/src/ckanext-downloadsdf version=master
@@ -100,7 +100,7 @@
       action: command chdir=/vagrant fpm
               -t deb -s dir
               --name datapackager
-              --description='b2'
+              --description='datapackager'
               --license='AGPL v3.0'
               --maintainer='CKAN team <ckan-dev@lists.okfn.org>'
               --vendor='Open Knowledge Foundation'
