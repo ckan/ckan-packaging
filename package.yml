@@ -59,17 +59,6 @@
     - name: install requirements for datapackager
       action: pip requirements=/usr/lib/ckan/default/src/ckanext-datapackager/requirements.txt virtualenv=/usr/lib/ckan/default
 
-    - name: install downloadsdf extension
-      action: git repo=https://github.com/ckan/ckanext-downloadsdf dest=/usr/lib/ckan/default/src/ckanext-downloadsdf version=master
-
-    - name: install requirements for downloadsdf
-      action: pip requirements=/usr/lib/ckan/default/src/ckanext-downloadsdf/requirements.txt virtualenv=/usr/lib/ckan/default
-
-    - name: install simplecsvpreview extension
-      action: git repo=https://github.com/ckan/ckanext-simplecsvpreview dest=/usr/lib/ckan/default/src/ckanext-simplecsvpreview version=master
-
-#    - name: install requirements for downloadsdf
-#      action: pip requirements=/usr/lib/ckan/default/src/ckanext-downloadsdf/requirements.txt virtualenv=/usr/lib/ckan/default
     - name: compile pyc
       action: command /usr/lib/ckan/default/bin/python -m compileall /usr/lib/ckan/default/src
 
