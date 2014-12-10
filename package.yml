@@ -55,6 +55,10 @@
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
 
+    - name: get ckan version
+      command: /usr/lib/ckan/default/bin/python -c "import ckan; print ckan.__version__"
+      register: ckan_version
+
       # if datapusher needs to be setup
     - name: pull datapusher version
       action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=stable
@@ -77,11 +81,18 @@
     - name: copy all needed files
       action: copy src={{ item }} dest=/{{ item }}
       with_items:
-        - etc/ckan/default/who.ini
         - etc/ckan/default/apache.wsgi
         - etc/apache2/sites-available/ckan_default
         - etc/nginx/sites-available/ckan
         - etc/cron.daily/remove_old_sessions
+
+    - name: copy who.ini (ckan<2.3)
+      action: copy src=etc/ckan/default/who.ini_pre_ckan_2.3 dest=/etc/ckan/default/who.ini
+      when: "ckan_version.stdout | version_compare('2.3', '<')"
+
+    - name: copy who.ini (ckan>=2.3)
+      action: copy src=etc/ckan/default/who.ini dest=/etc/ckan/default/who.ini
+      when: "ckan_version.stdout | version_compare('2.3', '>=')"
 
     - name: copy executables
       action: copy src={{ item }} dest=/{{ item }} mode=744
