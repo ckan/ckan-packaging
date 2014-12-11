@@ -86,13 +86,8 @@
         - etc/nginx/sites-available/ckan
         - etc/cron.daily/remove_old_sessions
 
-    - name: copy who.ini (ckan<2.3)
-      action: copy src=etc/ckan/default/who.ini_pre_ckan_2.3 dest=/etc/ckan/default/who.ini
-      when: "ckan_version.stdout | version_compare('2.3', '<')"
-
-    - name: copy who.ini (ckan>=2.3)
-      action: copy src=etc/ckan/default/who.ini dest=/etc/ckan/default/who.ini
-      when: "ckan_version.stdout | version_compare('2.3', '>=')"
+    - name: copy source who.ini to configuration folder
+      action: command cp /usr/lib/ckan/default/src/ckan/who.ini /etc/ckan/default/who.ini
 
     - name: copy executables
       action: copy src={{ item }} dest=/{{ item }} mode=744
@@ -115,5 +110,5 @@
               --iteration {{ iteration }}
               --version {{ version }}
               --depends nginx --depends apache2 --depends libapache2-mod-wsgi --depends libpq5
-              --config-files /etc/apache2/sites-available/ckan_default --config-files /etc/nginx/sites-available/ckan
+              --config-files /etc/apache2/sites-available/ckan_default --config-files /etc/nginx/sites-available/ckan --config-files /etc/ckan/default/who.ini
               /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan_default /etc/nginx/sites-available/ckan
