@@ -40,7 +40,7 @@
         - /usr/lib/ckan
 
     - name: pull ckan version
-      action: git repo=https://github.com/okfn/ckan dest=/usr/lib/ckan/default/src/ckan version=release-v{{ version }}
+      action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version=release-v{{ version }}
 
     - name: get pip
       action: easy_install name=pip
@@ -50,7 +50,7 @@
       register: requirements_file_name
 
     - name: install requirements and make virtualenv for ckan
-      action: pip requirements=/usr/lib/ckan/default/src/ckan/{{ requirements_file_name.stdout }} virtualenv=/usr/lib/ckan/default/ virtualenv_site_packages=no
+      action: pip requirements=/usr/lib/ckan/default/src/ckan/{{ requirements_file_name.stdout }} virtualenv=/usr/lib/ckan/default/
 
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
@@ -59,13 +59,17 @@
       command: /usr/lib/ckan/default/bin/python -c "import ckan; print ckan.__version__"
       register: ckan_version
 
-      # if datapusher needs to be setup
-    - name: pull datapusher version
-      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=stable
-      when: datapusher == 'y'
+    # if datapusher needs to be setup
+    - name: pull datapusher version (ckan<2.3)
+      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.1
+      when: datapusher == 'y' and ckan_version.stdout|version_compare('2.3', '<')
+
+    - name: pull datapusher version (ckan>=2.3)
+      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.4
+      when: datapusher == 'y' and ckan_version.stdout|version_compare('2.3', '>=')
 
     - name: install requirements and make virtualenv for datapusher
-      action: pip requirements=/usr/lib/ckan/datapusher/src/datapusher/requirements.txt virtualenv=/usr/lib/ckan/datapusher/ virtualenv_site_packages=no
+      action: pip requirements=/usr/lib/ckan/datapusher/src/datapusher/requirements.txt virtualenv=/usr/lib/ckan/datapusher/
       when: datapusher == 'y'
 
     - name: run setup.py develop for datapusher
