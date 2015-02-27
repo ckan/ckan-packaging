@@ -72,7 +72,7 @@ fi
 
 if [ ! -f /etc/apache2/sites-enabled/datapusher ];
 then
-	a2ensite datapusher
+	a2ensite datapusher.conf
 fi
 
 if [ ! -f /etc/ckan/datapusher_settings.py ];
