@@ -67,7 +67,7 @@ done
 {% if datapusher == 'y' %}
 if [ ! -f /etc/apache2/sites-available/datapusher ];
 then
-	cp /usr/lib/ckan/datapusher/src/datapusher/deployment/datapusher /etc/apache2/sites-available/datapusher
+	cp /usr/lib/ckan/datapusher/src/datapusher/deployment/datapusher.conf /etc/apache2/sites-available/datapusher.conf
 fi
 
 if [ ! -f /etc/apache2/sites-enabled/datapusher ];
