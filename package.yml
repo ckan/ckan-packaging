@@ -1,26 +1,27 @@
 ---
-- hosts: build
+- hosts: all
   vars_prompt:
    - name: version
      prompt: "Ckan Version"
-     private: False
+     private: True
    - name: iteration
      prompt: "Iteration"
-     private: False
+     private: True
    - name: datapusher
      prompt: "Enable datapusher (y/n)?"
      default: "y"
-     private: false
+     private: True
   tasks:
     - name: make sure packages are installed
       action: apt pkg={{ item }} state=installed
       with_items:
-        - rubygems
+        - rubygems-integration
         - python-virtualenv
         - python-setuptools
         - git-core
         - python-dev
-        - ruby1.8-dev
+        #- ruby1.8-dev
+        - ruby-dev
         - postgresql
         - libpq-dev
         - libxml2-dev
@@ -102,7 +103,7 @@
       action: template src=tmp/after_web.j2 dest=/tmp/after_web.sh mode=744
 
     - name: build deb main
-      action: command chdir=/var/www/build fpm
+      action: command chdir=/vagrant fpm
               -t deb -s dir
               --name python-ckan
               --description='CKAN is an open-source DMS (data management system) for powering data hubs and data portals.'
