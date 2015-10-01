@@ -87,7 +87,7 @@
       action: copy src={{ item }} dest=/{{ item }}
       with_items:
         - etc/ckan/default/apache.wsgi
-        - etc/apache2/sites-available/ckan_default
+        - etc/apache2/sites-available/ckan_default.conf
         - etc/nginx/sites-available/ckan
         - etc/cron.daily/remove_old_sessions
 
@@ -115,5 +115,5 @@
               --iteration {{ iteration }}
               --version {{ version }}
               --depends nginx --depends apache2 --depends libapache2-mod-wsgi --depends libpq5
-              --config-files /etc/apache2/sites-available/ckan_default --config-files /etc/nginx/sites-available/ckan --config-files /etc/ckan/default/who.ini
-              /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan_default /etc/nginx/sites-available/ckan
+              --config-files /etc/apache2/sites-available/ckan_default.conf --config-files /etc/nginx/sites-available/ckan --config-files /etc/ckan/default/who.ini
+              /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan_default.conf /etc/nginx/sites-available/ckan
