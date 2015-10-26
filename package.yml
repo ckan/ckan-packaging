@@ -62,11 +62,11 @@
 
     # if datapusher needs to be setup
     - name: pull datapusher version (ckan<2.3)
-      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.1
+      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.1.2
       when: datapusher == 'y' and ckan_version.stdout|version_compare('2.3', '<')
 
     - name: pull datapusher version (ckan>=2.3)
-      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.6
+      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.7
       when: datapusher == 'y' and ckan_version.stdout|version_compare('2.3', '>=')
 
     - name: install requirements and make virtualenv for datapusher
