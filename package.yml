@@ -13,15 +13,12 @@
      private: True
   tasks:
     - name: make sure packages are installed
-      action: apt pkg={{ item }} state=installed
+      action: apt pkg={{ item }} state=installed update_cache=yes
       with_items:
-        - rubygems-integration
         - python-virtualenv
         - python-setuptools
         - git-core
         - python-dev
-        #- ruby1.8-dev
-        - ruby-dev
         - postgresql
         - libpq-dev
         - libxml2-dev
@@ -30,6 +27,20 @@
         - apache2
         - libapache2-mod-wsgi
         - nginx
+
+    - name: make sure packages are installed (precise)
+      action: apt pkg={{ item }} state=installed
+      when: ansible_distribution_version == "12.04"
+      with_items:
+        - rubygems
+        - ruby1.8-dev
+
+    - name: make sure packages are installed (trusty)
+      action: apt pkg={{ item }} state=installed
+      when: ansible_distribution_version == "14.04"
+      with_items:
+        - rubygems-integration
+        - ruby-dev
 
     - name: install fpm
       action: command gem install -v 0.4.21 fpm creates=/usr/local/bin/fpm
@@ -83,24 +94,28 @@
         - /etc/ckan/default
         - /var/www/build
 
-    - name: copy all needed files
-      action: copy src={{ item }} dest=/{{ item }}
+    - name: copy all common needed files
+      action: copy src=common/{{ item }} dest=/{{ item }}
       with_items:
         - etc/ckan/default/apache.wsgi
-        - etc/apache2/sites-available/ckan_default.conf
         - etc/nginx/sites-available/ckan
         - etc/cron.daily/remove_old_sessions
+
+    - name: copy all distribution specific files
+      action: copy src={{ ansible_distribution_release }}/{{ item }} dest=/{{ item }}
+      with_items:
+        - etc/apache2/sites-available/ckan_default.conf
 
     - name: copy source who.ini to configuration folder
       action: command cp /usr/lib/ckan/default/src/ckan/who.ini /etc/ckan/default/who.ini
 
     - name: copy executables
-      action: copy src={{ item }} dest=/{{ item }} mode=744
+      action: copy src=common/{{ item }} dest=/{{ item }} mode=744
       with_items:
         - usr/bin/ckan
 
     - name: template the after web script
-      action: template src=tmp/after_web.j2 dest=/tmp/after_web.sh mode=744
+      action: template src=common/tmp/after_web.j2 dest=/tmp/after_web.sh mode=744
 
     - name: build deb main
       action: command chdir=/vagrant fpm
@@ -112,7 +127,7 @@
               --vendor='Open Knowledge Foundation'
               --url='http://ckan.org'
               --after-install=/tmp/after_web.sh
-              --iteration {{ iteration }}
+              --iteration {{ ansible_distribution_release }}{{ iteration }}
               --version {{ version }}
               --depends nginx --depends apache2 --depends libapache2-mod-wsgi --depends libpq5
               --config-files /etc/apache2/sites-available/ckan_default.conf --config-files /etc/nginx/sites-available/ckan --config-files /etc/ckan/default/who.ini
