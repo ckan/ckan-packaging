@@ -2,13 +2,13 @@
 - hosts: all
   vars_prompt:
    - name: version
-     prompt: "Ckan Version"
+     prompt: "CKAN Version"
      private: True
    - name: iteration
      prompt: "Iteration"
      private: True
    - name: datapusher
-     prompt: "Enable datapusher (y/n)?"
+     prompt: "Enable DataPusher? [Y/n]"
      default: "y"
      private: True
   tasks:
