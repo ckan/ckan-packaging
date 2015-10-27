@@ -22,7 +22,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "ansible" do |ansible|
      ansible.playbook = "package.yml"
      ansible.host_key_checking = false
-     ansible.verbose = "vvvv"
      ansible.sudo = true
+
+     ansible.verbose = ENV.fetch("CKAN_PACKAGE_ANSIBLE_VERBOSE", "vv")
+     ansible.extra_vars = {}
+
+     ansible.extra_vars["datapusher"] = ENV.fetch("CKAN_PACKAGE_DATAPUSHER", "y")
+
+     if ENV.has_key?("CKAN_PACKAGE_VERSION")
+         ansible.extra_vars["version"] = ENV["CKAN_PACKAGE_VERSION"]
+     end
+     if ENV.has_key?("CKAN_PACKAGE_ITERATION")
+         ansible.extra_vars["iteration"] = ENV["CKAN_PACKAGE_ITERATION"]
+     end
    end
 end
