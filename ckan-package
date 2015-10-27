@@ -69,7 +69,7 @@ If not provided you will be propmt for it''')
 defaults to true''')
     parser.add_argument('-t', '--target',
                         help='''The distribution to target (precise or trusty).
-If ommitted, both are built''')
+If omitted, both are built''')
     parser.add_argument('-a', '--ansible-verbose',
                         default='vv',
                         help='Ansible verbosity level, defaults to "vv"')

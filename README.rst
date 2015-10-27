@@ -10,10 +10,10 @@ Install Vagrant and Ansible and run::
 
     ./ckan-package -v 2.4.2 -i 1
 
-If you ommit the parameters you will be prompt for them.
+If you omit the parameters you will be prompt for them.
 
 After Vagrant and Ansible have done their thing (it will take a while), you
- should end up with two deb files on the working folder::
+should end up with two deb files on the working folder::
 
     python-ckan_2.4.2-precise1_amd64.deb
     python-ckan_2.4.2-trusty1_amd64.deb
