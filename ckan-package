@@ -1,0 +1,101 @@
+#!/usr/bin/env python
+
+import subprocess
+import re
+import os
+import sys
+import argparse
+
+
+def set_env_vars(version, iteration, datapusher='y', ansible_verbose='vv'):
+
+    os.environ['CKAN_PACKAGE_VERSION'] = version
+    os.environ['CKAN_PACKAGE_ITERATION'] = iteration
+    os.environ['CKAN_PACKAGE_DATAPUSHER'] = datapusher
+    os.environ['CKAN_PACKAGE_ANSIBLE_VERBOSE'] = ansible_verbose
+
+
+def clear_env_vars():
+
+    for key in ['CKAN_PACKAGE_VERSION',
+                'CKAN_PACKAGE_ITERATION',
+                'CKAN_PACKAGE_DATAPUSHER',
+                'CKAN_PACKAGE_ANSIBLE_VERBOSE']:
+        if key in os.environ:
+            del os.environ[key]
+
+
+def run(target=None):
+
+    print 'Checking Vagrant machines status...'
+    out = subprocess.check_output(['vagrant', 'status'])
+
+    if target is None or target == 'precise':
+        status_precise = re.search('precise\s*(\w+)', out).group(1)
+        print 'Machine "precise" is ' + status_precise
+
+    if target is None or target == 'trusty':
+        status_trusty = re.search('trusty\s*(\w+)', out).group(1)
+        print 'Machine "trusty" is ' + status_trusty
+
+    if status_precise != 'running' or status_trusty != 'running':
+        print 'Starting up machine(s)'
+        command = ['vagrant', 'up', '--provision']
+    else:
+        print 'Machine(s) already started, provisioning'
+        command = ['vagrant', 'provision']
+
+    if target:
+        command.append(target)
+
+    subprocess.call(command)
+
+
+if __name__ == '__main__':
+    description = '''Builds CKAN deb packages.
+This script essentially sets up the necessary env vars and calls `vagrant up`
+or `vagrant provision` as appropiate.'''
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('-v', '--version',
+                        help='''The CKAN version to build, eg 2.4.2.
+If not provided you will be propmt for it''')
+    parser.add_argument('-i', '--iteration',
+                        help='''The iteration number to add to the package name.
+If not provided you will be propmt for it''')
+    parser.add_argument('-d', '--datapusher',
+                        action='store_true',
+                        default='True',
+                        help='''Whether to add the DataPusher to the package,
+defaults to true''')
+    parser.add_argument('-t', '--target',
+                        help='''The distribution to target (precise or trusty).
+If ommitted, both are built''')
+    parser.add_argument('-a', '--ansible-verbose',
+                        default='vv',
+                        help='Ansible verbosity level, defaults to "vv"')
+
+    def _check_arg(args, var, prompt):
+        if getattr(args, var):
+            return getattr(args, var)
+        var = raw_input('{0}:'.format(prompt))
+        if not var:
+            print('Please provide a value for the {0}'.format(prompt))
+            sys.exit(1)
+        return var
+
+    args = parser.parse_args()
+
+    version = _check_arg(args, 'version', 'CKAN Version')
+    iteration = _check_arg(args, 'iteration', 'Iteration')
+    datapusher = args.datapusher
+    target = args.target
+    if target and target not in ('precise', 'trusty'):
+        print 'Wrong target: ' + target
+        sys.exit(1)
+    ansible_verbose = args.ansible_verbose
+
+    set_env_vars(version, iteration, datapusher, ansible_verbose)
+    try:
+        run(target)
+    finally:
+        clear_env_vars()
