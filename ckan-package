@@ -27,6 +27,9 @@ def clear_env_vars():
 
 def run(target=None):
 
+    status_precise = None
+    status_trusty = None
+
     print 'Checking Vagrant machines status...'
     out = subprocess.check_output(['vagrant', 'status'])
 
@@ -38,7 +41,8 @@ def run(target=None):
         status_trusty = re.search('trusty\s*(\w+)', out).group(1)
         print 'Machine "trusty" is ' + status_trusty
 
-    if status_precise != 'running' or status_trusty != 'running':
+    if (status_precise and status_precise != 'running') or \
+            (status_trusty and status_trusty != 'running'):
         print 'Starting up machine(s)'
         command = ['vagrant', 'up', '--provision']
     else:
