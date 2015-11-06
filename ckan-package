@@ -68,7 +68,7 @@ If not provided you will be propmt for it''')
 If not provided you will be propmt for it''')
     parser.add_argument('-d', '--datapusher',
                         action='store_true',
-                        default='True',
+                        default='y',
                         help='''Whether to add the DataPusher to the package,
 defaults to true''')
     parser.add_argument('-t', '--target',

@@ -35,9 +35,9 @@ then
 	ln -s /etc/nginx/sites-available/ckan /etc/nginx/sites-enabled/ckan
 fi
 
-if [ -f /etc/apache2/sites-enabled/000-default.conf ];
+if [ -f /etc/apache2/sites-enabled/000-default.conf ] || [ -f /etc/apache2/sites-enabled/default ];
 then
-	a2dissite 000-default.conf
+	a2dissite 000-default
 fi
 
 if [ ! -f /etc/apache2/sites-enabled/ckan_default.conf ];
