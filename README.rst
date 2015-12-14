@@ -6,18 +6,17 @@ These scripts are used to build Debian packages (deb files) for CKAN releases.
 Overview
 --------
 
-Install Vagrant and Ansible and run::
+To create Debian packages of CKAN, install Vagrant and Ansible and run::
 
-    ./ckan-package -v 2.4.2 -i 1
+    ./ckan-package -v 2.4.2 -i beta1
 
-If you omit the parameters you will be prompt for them.
+If you omit the parameters you will be prompted for them.
 
 After Vagrant and Ansible have done their thing (it will take a while), you
 should end up with two deb files on the working folder::
 
     python-ckan_2.4.2-precise1_amd64.deb
     python-ckan_2.4.2-trusty1_amd64.deb
-
 
 Keep reading for more options and to learn how it works.
 
@@ -52,20 +51,27 @@ necessary env vars and calls ``vagrant up`` or ``vagrant provision`` as appropia
 Install and setup
 -----------------
 
-1. Install Vagrant::
+1. Install Vagrant. On an Ubuntu machine::
 
     sudo apt-get install vagrant
 
-  Or for more recent versions, head to http://www.vagrantup.com/downloads
+   Or for an OSX machine use the installer at https://www.vagrantup.com/downloads.html
 
-
-2. Install Ansible (either on a virtualenv or globally)::
+2. Install Ansible. If you have a virtualenv you can install it in that::
 
     pip install ansible
 
-3. Checkout this repository in your virtualenv.
+   Otherwise simply install it globally::
 
-You are now ready to go.
+    sudo easy_install ansible
+
+3. Checkout this repository in your virtualenv or elsewhere::
+
+    git clone https://github.com/ckan/ckan-packaging.git
+    cd ckan-packaging
+
+You are now ready to build packages.
+
 
 Building a package
 ------------------
@@ -77,11 +83,12 @@ full list of options and parameters::
 
 Most of the times you will want to run something like the following::
 
-    ./ckan-package -v 2.4.2 -i 1
+    ./ckan-package -v 2.4.2 -i beta1
 
-or::
+Where:
 
-    ./ckan-package --version 2.4.2 --iteration 1
+ * -v (version) relates to the CKAN branch: `release-v2.4.2`
+ * -i (iteration) e.g. `beta1` for a beta or for a proper release use a number e.g. `1`
 
 This will build two packages successively, one for precise and one for trusty. If you
 only want to target one distribution, you can pass the ``-t`` parameter::
