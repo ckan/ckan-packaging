@@ -15,7 +15,6 @@
     - name: make sure packages are installed
       action: apt pkg={{ item }} state=installed update_cache=yes
       with_items:
-        - python-virtualenv
         - python-setuptools
         - git-core
         - python-dev
@@ -51,11 +50,17 @@
         - /etc/ckan
         - /usr/lib/ckan
 
+    - name: get pip (I)
+      action: get_url url=https://bootstrap.pypa.io/get-pip.py dest=/tmp
+
+    - name: get pip (II)
+      action: command python /tmp/get-pip.py
+
+    - name: install virtualenv
+      action: pip name=virtualenv
+
     - name: pull ckan version
       action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version=release-v{{ version }}
-
-    - name: get pip
-      action: easy_install name=pip
 
     - name: check requirements file name
       shell: "[ -f /usr/lib/ckan/default/src/ckan/pip-requirements.txt ] && echo 'pip-requirements.txt' || echo 'requirements.txt'"
