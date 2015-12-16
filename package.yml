@@ -15,7 +15,6 @@
     - name: make sure packages are installed
       action: apt pkg={{ item }} state=installed update_cache=yes
       with_items:
-        - python-setuptools
         - git-core
         - python-dev
         - postgresql
@@ -49,6 +48,12 @@
       with_items:
         - /etc/ckan
         - /usr/lib/ckan
+
+    - name: get setupttols (I)
+      action: get_url url=https://bootstrap.pypa.io/ez_setup.py dest=/tmp
+
+    - name: get setupttols (II)
+      action: command python /tmp/ez_setup.py
 
     - name: get pip (I)
       action: get_url url=https://bootstrap.pypa.io/get-pip.py dest=/tmp
