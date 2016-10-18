@@ -64,8 +64,13 @@
     - name: install virtualenv
       action: pip name=virtualenv
 
-    - name: pull ckan version
+    - name: pull ckan version (ckan<2.6)
       action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version=release-v{{ version }}
+      when: version|version_compare('2.6', '<')
+
+    - name: pull ckan version (ckan>=2.6)
+      action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version=dev-v{{ version }}
+      when: version|version_compare('2.6', '>=')
 
     - name: check requirements file name
       shell: "[ -f /usr/lib/ckan/default/src/ckan/pip-requirements.txt ] && echo 'pip-requirements.txt' || echo 'requirements.txt'"
@@ -87,7 +92,7 @@
       when: datapusher == 'y' and ckan_version.stdout|version_compare('2.3', '<')
 
     - name: pull datapusher version (ckan>=2.3)
-      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.8
+      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.9
       when: datapusher == 'y' and ckan_version.stdout|version_compare('2.3', '>=')
 
     - name: install requirements and make virtualenv for datapusher
