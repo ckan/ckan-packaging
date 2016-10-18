@@ -61,7 +61,7 @@ This script essentially sets up the necessary env vars and calls `vagrant up`
 or `vagrant provision` as appropiate.'''
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('-v', '--version',
-                        help='''The CKAN version to build, eg 2.4.2.
+                        help='''The CKAN branch or tag to build, eg master, dev-v2.6, release-v2.5.3.
 If not provided you will be propmt for it''')
     parser.add_argument('-i', '--iteration',
                         help='''The iteration number to add to the package name.
@@ -89,7 +89,7 @@ If omitted, both are built''')
 
     args = parser.parse_args()
 
-    version = _check_arg(args, 'version', 'CKAN Version')
+    version = _check_arg(args, 'version', 'CKAN Version (branch or tag)')
     iteration = _check_arg(args, 'iteration', 'Iteration')
     datapusher = args.datapusher
     target = args.target
