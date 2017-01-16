@@ -65,7 +65,7 @@
       action: pip name=virtualenv
 
     - name: pull ckan version
-      action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version=release-v{{ version }}
+      action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version=ckan-{{ version }}
 
     - name: check requirements file name
       shell: "[ -f /usr/lib/ckan/default/src/ckan/pip-requirements.txt ] && echo 'pip-requirements.txt' || echo 'requirements.txt'"
