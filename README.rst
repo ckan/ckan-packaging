@@ -17,6 +17,7 @@ should end up with two deb files on the working folder::
 
     python-ckan_dev-v2.6-precise1_amd64.deb
     python-ckan_dev-v2.6-trusty1_amd64.deb
+    python-ckan_dev-v2.6-xenial1_amd64.deb
 
 Keep reading for more options and to learn how it works.
 
@@ -31,6 +32,7 @@ Each machine is running one of the supported distributions that we target, curre
 
 * Ubuntu 12.04 64bit (precise)
 * Ubuntu 14.04 64bit (trusty)
+* Ubuntu 16.04 64bit (xenial)
 
 We use `Ansible <http://ansible.com>`_ to provision the Vagrant machines, which
 results in the creation of the package. Ansible is configured via
