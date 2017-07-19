@@ -27,8 +27,10 @@ def clear_env_vars():
 
 def run(target=None):
 
+    # TODO: abstract
     status_precise = None
     status_trusty = None
+    status_xenial = None
 
     print 'Checking Vagrant machines status...'
     out = subprocess.check_output(['vagrant', 'status'])
@@ -41,8 +43,13 @@ def run(target=None):
         status_trusty = re.search('trusty\s*(\w+)', out).group(1)
         print 'Machine "trusty" is ' + status_trusty
 
+    if target is None or target == 'xenial':
+        status_xenial = re.search('xenial\s*(\w+)', out).group(1)
+        print 'Machine "xenial" is ' + status_xenial
+
     if (status_precise and status_precise != 'running') or \
-            (status_trusty and status_trusty != 'running'):
+            (status_trusty and status_trusty != 'running') or \
+            (status_xenial and status_xenial != 'running'):
         print 'Starting up machine(s)'
         command = ['vagrant', 'up', '--provision']
     else:
@@ -72,8 +79,8 @@ If not provided you will be propmt for it''')
                         help='''Whether to add the DataPusher to the package,
 defaults to true''')
     parser.add_argument('-t', '--target',
-                        help='''The distribution to target (precise or trusty).
-If omitted, both are built''')
+                        help='''The distribution to target (precise, trusty or xenial).
+If omitted, all are built''')
     parser.add_argument('-a', '--ansible-verbose',
                         default='vv',
                         help='Ansible verbosity level, defaults to "vv"')
@@ -93,7 +100,7 @@ If omitted, both are built''')
     iteration = _check_arg(args, 'iteration', 'Iteration')
     datapusher = args.datapusher
     target = args.target
-    if target and target not in ('precise', 'trusty'):
+    if target and target not in ('precise', 'trusty', 'xenial'):
         print 'Wrong target: ' + target
         sys.exit(1)
     ansible_verbose = args.ansible_verbose
