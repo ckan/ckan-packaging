@@ -11,6 +11,10 @@
      prompt: "Enable DataPusher? [Y/n]"
      default: "y"
      private: True
+  gather_facts: False
+  pre_tasks:
+    - raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal)
+    - setup: # aka gather_facts 
   tasks:
     - name: make sure packages are installed
       action: apt pkg={{ item }} state=installed update_cache=yes
@@ -22,8 +26,6 @@
         - libxml2-dev
         - libxslt1-dev
         - build-essential
-        - apache2
-        - libapache2-mod-wsgi
         - nginx
 
     - name: make sure packages are installed (precise)
@@ -32,16 +34,21 @@
       with_items:
         - rubygems
         - ruby1.8-dev
+        - apache2
+        - libapache2-mod-wsgi
 
-    - name: make sure packages are installed (trusty)
+
+    - name: make sure packages are installed (trusty / xenial)
       action: apt pkg={{ item }} state=installed
-      when: ansible_distribution_version == "14.04"
+      when: ansible_distribution_version == "14.04" or ansible_distribution_version == "16.04"
       with_items:
         - rubygems-integration
         - ruby-dev
+        - apache2
+        - libapache2-mod-wsgi
 
     - name: install fpm
-      action: command gem install -v 0.4.21 fpm creates=/usr/local/bin/fpm
+      action: command gem install --no-ri --no-rdoc fpm
 
     - name: delete old directories
       action: file path={{ item }} state=absent
