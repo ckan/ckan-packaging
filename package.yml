@@ -47,7 +47,12 @@
         - apache2
         - libapache2-mod-wsgi
 
-    - name: install fpm
+    - name: install fpm (precise)
+      when: ansible_distribution_version == "12.04"
+      action: command gem install -v 0.4.21 fpm creates=/usr/local/bin/fpm
+
+    - name: install fpm (trusty / xenial)
+      when: ansible_distribution_version == "14.04" or ansible_distribution_version == "16.04"
       action: command gem install --no-ri --no-rdoc fpm
 
     - name: delete old directories
