@@ -21,9 +21,11 @@ then
 	/usr/lib/ckan/default/bin/paster make-config ckan /etc/ckan/default/production.ini
 fi
 
+{% if ansible_distribution_version == "12.04"  or ansible_distribution_version == "12.04" %}
 update-rc.d nginx defaults
 update-rc.d apache2 defaults
 initctl reload-configuration
+{% endif %}
 
 if [ -f /etc/nginx/sites-enabled/default ];
 then
@@ -79,7 +81,7 @@ done
 
     {% endif %}
 
-    {% if ansible_distribution_version == "14.04" %}
+    {% if ansible_distribution_version == "14.04" or ansible_distribution_version == "16.04"%}
 
         if [ ! -f /etc/apache2/sites-available/datapusher ];
         then
