@@ -6,10 +6,6 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.define "precise" do |precise|
-    precise.vm.box = "ubuntu/precise64"
-  end
-
   config.vm.define "trusty" do |trusty|
     trusty.vm.box = "ubuntu/trusty64"
   end
@@ -26,7 +22,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "ansible" do |ansible|
      ansible.playbook = "package.yml"
      ansible.host_key_checking = false
-     ansible.sudo = true
+     ansible.become = true
 
      ansible.verbose = ENV.fetch("CKAN_PACKAGE_ANSIBLE_VERBOSE", "vv")
      ansible.extra_vars = {}

@@ -13,43 +13,31 @@
      private: True
   tasks:
     - name: make sure packages are installed
-      action: apt pkg={{ item }} state=installed update_cache=yes
-      with_items:
-        - git-core
-        - python-dev
-        - postgresql
-        - libpq-dev
-        - libxml2-dev
-        - libxslt1-dev
-        - build-essential
-        - apache2
-        - libapache2-mod-wsgi
+      apt:
+        name:
+          - 'git-core'
+          - 'python-dev'
+          - 'postgresql'
+          - 'libpq-dev'
+          - 'libxml2-dev'
+          - 'libxslt1-dev'
+          - 'build-essential'
+          - 'apache2'
+          - 'libapache2-mod-wsgi'
+          - 'rubygems-integration'
+          - 'ruby-dev'
+
 
     - name: stop apache before installing nginx (xenial)
       service: name=apache2 state=stopped
       when: ansible_distribution_version == "16.04"
 
     - name: make sure nginx is installed
-      action: apt pkg=nginx state=installed update_cache=yes
-
-
-    - name: make sure packages are installed (precise)
-      action: apt pkg={{ item }} state=installed
-      when: ansible_distribution_version == "12.04"
-      with_items:
-        - rubygems
-        - ruby1.8-dev
-
-    - name: make sure packages are installed (trusty)
-      action: apt pkg={{ item }} state=installed
-      when: ansible_distribution_version == "14.04" or ansible_distribution_version == "16.04"
-      with_items:
-        - rubygems-integration
-        - ruby-dev
+      action: apt pkg=nginx state=present update_cache=yes
 
     - name: install fpm
       action: command gem install -v 0.4.21 fpm creates=/usr/local/bin/fpm
-      when: ansible_distribution_version == "12.04" or ansible_distribution_version == "14.04"
+      when: ansible_distribution_version == "14.04"
 
     - name: install fpm (xenial)
       action: command gem install -v 1.8.1 fpm creates=/usr/local/bin/fpm
@@ -93,14 +81,9 @@
       command: /usr/lib/ckan/default/bin/python -c "import ckan; print ckan.__version__"
       register: ckan_version
 
-    # if datapusher needs to be setup
-    - name: pull datapusher version (ckan<2.3)
-      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.1.2
-      when: datapusher == 'y' and ckan_version.stdout|version_compare('2.3', '<')
-
-    - name: pull datapusher version (ckan>=2.3)
+    - name: pull datapusher version
       action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.15
-      when: datapusher == 'y' and ckan_version.stdout|version_compare('2.3', '>=')
+      when: datapusher == 'y'
 
     - name: install requirements and make virtualenv for datapusher
       action: pip requirements=/usr/lib/ckan/datapusher/src/datapusher/requirements.txt virtualenv=/usr/lib/ckan/datapusher/
