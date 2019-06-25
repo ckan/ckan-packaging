@@ -40,7 +40,7 @@
       when: ansible_distribution_version == "14.04"
 
     - name: install fpm (xenial)
-      action: command gem install -v 1.8.1 fpm creates=/usr/local/bin/fpm
+      action: command gem install -v 1.11.0 fpm -- creates=/usr/local/bin/fpm
       when: ansible_distribution_version == "16.04"
 
     - name: delete old directories
