@@ -62,7 +62,9 @@
       action: command python /tmp/get-pip.py
 
     - name: install virtualenv
-      action: pip name=virtualenv
+      pip:
+        name: virtualenv
+        executable: /usr/local/bin/pip2
 
     - name: pull ckan version
       action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version={{ version }}
