@@ -15,7 +15,6 @@ If you omit the parameters you will be prompted for them.
 After Vagrant and Ansible have done their thing (it will take a while), you
 should end up with two deb files on the working folder::
 
-    python-ckan_dev-v2.6-precise1_amd64.deb
     python-ckan_dev-v2.6-trusty1_amd64.deb
     python-ckan_dev-v2.6-xenial1_amd64.deb
 
@@ -30,7 +29,6 @@ configured in a `multi-machine <https://docs.vagrantup.com/v2/multi-machine>`_ s
 
 Each machine is running one of the supported distributions that we target, currently:
 
-* Ubuntu 12.04 64bit (precise)
 * Ubuntu 14.04 64bit (trusty)
 * Ubuntu 16.04 64bit (xenial)
 
@@ -92,7 +90,7 @@ Where:
  * -v (version) relates to the CKAN  branch or tag to build, eg master, dev-v2.6, release-v2.5.3
  * -i (iteration) e.g. `beta1` for a beta or for a proper release use a number e.g. `1`
 
-This will build two packages successively, one for precise and one for trusty. If you
+This will build two packages successively, one for trusty and one for xenial. If you
 only want to target one distribution, you can pass the ``-t`` parameter::
 
     ./ckan-package --version release-v2.4.2 --iteration 1 --target trusty
