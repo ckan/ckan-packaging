@@ -29,6 +29,7 @@ def run(target=None):
 
     status_trusty = None
     status_xenial = None
+    status_bionic = None
 
     print 'Checking Vagrant machines status...'
     out = subprocess.check_output(['vagrant', 'status'])
@@ -40,9 +41,14 @@ def run(target=None):
     if target is None or target == 'xenial':
             status_xenial = re.search('xenial\s*(\w+)', out).group(1)
             print 'Machine "xenial" is ' + status_xenial
+            
+    if target is None or target == 'bionic':
+            status_bionic = re.search('bionic\s*(\w+)', out).group(1)
+            print 'Machine "bionic" is ' + status_bionicl
 
     if (status_trusty and status_trusty != 'running') or \
-            (status_xenial and status_xenial != 'running'):
+            (status_xenial and status_xenial != 'running') or \
+                (status_bionic and status_bionic != 'running'):
         print 'Starting up machine(s)'
         command = ['vagrant', 'up', '--provision']
     else:
@@ -72,7 +78,7 @@ If not provided you will be propmt for it''')
                         help='''Whether to add the DataPusher to the package,
 defaults to true''')
     parser.add_argument('-t', '--target',
-                        help='''The distribution to target (trusty or xenial).
+                        help='''The distribution to target (trusty or xenial or bionic).
 If omitted, both are built''')
     parser.add_argument('-a', '--ansible-verbose',
                         default='vv',
@@ -93,7 +99,7 @@ If omitted, both are built''')
     iteration = _check_arg(args, 'iteration', 'Iteration')
     datapusher = args.datapusher
     target = args.target
-    if target and target not in ('trusty', 'xenial'):
+    if target and target not in ('trusty', 'xenial', 'bionic'):
         print 'Wrong target: ' + target
         sys.exit(1)
     ansible_verbose = args.ansible_verbose
