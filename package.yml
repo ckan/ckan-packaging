@@ -14,6 +14,7 @@
   tasks:
     - name: make sure packages are installed
       apt:
+        force_apt_get: yes
         name:
           - 'git-core'
           - 'python-dev'
