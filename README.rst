@@ -92,7 +92,7 @@ Where:
  * -v (version) relates to the CKAN  branch or tag to build, eg master, dev-v2.6, release-v2.5.3
  * -i (iteration) e.g. `beta1` for a beta or for a proper release use a number e.g. `1`
 
-This will build two packages successively, one for trusty and one for xenial. If you
+This will build three packages successively, one for trusty, one for xenial and one for bionic. If you
 only want to target one distribution, you can pass the ``-t`` parameter::
 
     ./ckan-package --version dev-v2.8 --iteration 1 --target bionic
