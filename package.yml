@@ -31,11 +31,7 @@
 
     - name: stop apache before installing nginx (xenial)
       service: name=apache2 state=stopped
-      when: ansible_distribution_version == "16.04"
-      
-    - name: stop apache before installing nginx (bionic)
-      service: name=apache2 state=stopped
-      when: ansible_distribution_version == "18.04"
+      when: (ansible_distribution_version == "16.04") or (ansible_distribution_version == "18.04")
 
     - name: make sure nginx is installed
       action: apt pkg=nginx state=present update_cache=yes
