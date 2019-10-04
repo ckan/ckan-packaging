@@ -44,7 +44,7 @@ def run(target=None):
             
     if target is None or target == 'bionic':
             status_bionic = re.search('bionic\s*(\w+)', out).group(1)
-            print 'Machine "bionic" is ' + status_bionicl
+            print 'Machine "bionic" is ' + status_bionic
 
     if (status_trusty and status_trusty != 'running') or \
             (status_xenial and status_xenial != 'running') or \
