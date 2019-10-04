@@ -15,7 +15,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
   
   config.vm.define "bionic" do |bionic|
-    xenial.vm.box = "ubuntu/bionic64"
+    bionic.vm.box = "ubuntu/bionic64"
   end
 
   config.ssh.forward_agent = true
