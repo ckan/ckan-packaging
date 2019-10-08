@@ -81,7 +81,7 @@ done
 
     {% endif %}
 
-    {% if ansible_distribution_version == "14.04" or ansible_distribution_version == "16.04"%}
+    {% if ansible_distribution_version == "14.04" or ansible_distribution_version == "16.04" or ansible_distribution_version == "18.04" %}
 
         if [ ! -f /etc/apache2/sites-available/datapusher ];
         then
