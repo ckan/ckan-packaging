@@ -8,15 +8,16 @@ Overview
 
 To create Debian packages of CKAN, install Vagrant and Ansible and run::
 
-    ./ckan-package -v dev-v2.6 -i beta1
+    ./ckan-package -v dev-v2.8 -i 1
 
 If you omit the parameters you will be prompted for them.
 
 After Vagrant and Ansible have done their thing (it will take a while), you
-should end up with two deb files on the working folder::
+should end up with three deb files on the working folder::
 
-    python-ckan_dev-v2.6-trusty1_amd64.deb
-    python-ckan_dev-v2.6-xenial1_amd64.deb
+    python-ckan_dev-v2.8-trusty1_amd64.deb
+    python-ckan_dev-v2.8-xenial1_amd64.deb
+    python-ckan_dev-v2.8-bionic1_amd64.deb
 
 Keep reading for more options and to learn how it works.
 
@@ -31,6 +32,7 @@ Each machine is running one of the supported distributions that we target, curre
 
 * Ubuntu 14.04 64bit (trusty)
 * Ubuntu 16.04 64bit (xenial)
+* Ubuntu 18.04 64bit (bionic)
 
 We use `Ansible <http://ansible.com>`_ to provision the Vagrant machines, which
 results in the creation of the package. Ansible is configured via
@@ -83,17 +85,17 @@ full list of options and parameters::
 
 Most of the times you will want to run something like the following::
 
-    ./ckan-package -v ckan-2.6.0 -i 1
+    ./ckan-package -v dev-v2.8 -i 1
 
 Where:
 
  * -v (version) relates to the CKAN  branch or tag to build, eg master, dev-v2.6, release-v2.5.3
  * -i (iteration) e.g. `beta1` for a beta or for a proper release use a number e.g. `1`
 
-This will build two packages successively, one for trusty and one for xenial. If you
+This will build three packages successively, one for trusty, one for xenial and one for bionic. If you
 only want to target one distribution, you can pass the ``-t`` parameter::
 
-    ./ckan-package --version release-v2.4.2 --iteration 1 --target trusty
+    ./ckan-package --version dev-v2.8 --iteration 1 --target bionic
 
 The first time that you run the build commands Vagrant will
 need to download the OS images from the central repository, this might take a while.

@@ -14,6 +14,8 @@
   tasks:
     - name: make sure packages are installed
       apt:
+        update_cache: yes
+        force_apt_get: yes
         name:
           - 'git-core'
           - 'python-dev'
@@ -30,7 +32,7 @@
 
     - name: stop apache before installing nginx (xenial)
       service: name=apache2 state=stopped
-      when: ansible_distribution_version == "16.04"
+      when: (ansible_distribution_version == "16.04") or (ansible_distribution_version == "18.04")
 
     - name: make sure nginx is installed
       action: apt pkg=nginx state=present update_cache=yes
@@ -42,6 +44,10 @@
     - name: install fpm (xenial)
       action: command gem install -v 1.11.0 fpm -- creates=/usr/local/bin/fpm
       when: ansible_distribution_version == "16.04"
+      
+    - name: install fpm (bionic)
+      action: command gem install -v 1.11.0 fpm -- creates=/usr/local/bin/fpm
+      when: ansible_distribution_version == "18.04"
 
     - name: delete old directories
       action: file path={{ item }} state=absent
@@ -74,7 +80,7 @@
       register: requirements_file_name
 
     - name: install requirements and make virtualenv for ckan
-      action: pip requirements=/usr/lib/ckan/default/src/ckan/{{ requirements_file_name.stdout }} virtualenv=/usr/lib/ckan/default/
+      action: pip requirements=/usr/lib/ckan/default/src/ckan/{{ requirements_file_name.stdout }} virtualenv=/usr/lib/ckan/default/ virtualenv_python=python2.7
 
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
