@@ -54,6 +54,7 @@
       with_items:
         - /etc/ckan
         - /usr/lib/ckan
+        - /root/.cache/pip
 
     - name: get setupttols (I)
       action: get_url url=https://bootstrap.pypa.io/ez_setup.py dest=/tmp
@@ -71,6 +72,12 @@
       pip:
         name: virtualenv
         executable: /usr/local/bin/pip2
+      when: ansible_distribution_version != "14.04"
+
+    - name: install virtualenv
+      apt:
+        name: python-virtualenv
+      when: ansible_distribution_version == "14.04"
 
     - name: pull ckan version
       action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version={{ version }}
@@ -81,6 +88,15 @@
 
     - name: install requirements and make virtualenv for ckan
       action: pip requirements=/usr/lib/ckan/default/src/ckan/{{ requirements_file_name.stdout }} virtualenv=/usr/lib/ckan/default/ virtualenv_python=python2.7
+
+    - name: install setuptools version
+      pip:
+        name:
+          - setuptools==36.1
+        virtualenv: /usr/lib/ckan/default/
+        virtualenv_python: python2.7
+      when: ansible_distribution_version == "14.04"
+
 
     - name: run setup.py develop for ckan
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
@@ -93,8 +109,16 @@
       action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.15
       when: datapusher == 'y'
 
+    - name: make virtualenv for datapusher (trusty)
+      pip:
+        name:
+          - pip==20.0.2
+        virtualenv: /usr/lib/ckan/datapusher/
+        virtualenv_python: python2.7
+      when: datapusher == 'y' and ansible_distribution_version == "14.04"
+
     - name: install requirements and make virtualenv for datapusher
-      action: pip requirements=/usr/lib/ckan/datapusher/src/datapusher/requirements.txt virtualenv=/usr/lib/ckan/datapusher/
+      action: pip requirements=/usr/lib/ckan/datapusher/src/datapusher/requirements.txt virtualenv=/usr/lib/ckan/datapusher/ virtualenv_python=python2.7
       when: datapusher == 'y'
 
     - name: run setup.py develop for datapusher
