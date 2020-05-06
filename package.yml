@@ -82,6 +82,11 @@
     - name: pull ckan version
       action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version={{ version }}
 
+    - name: Recursively remove .git directory
+      file:
+        path: /usr/lib/ckan/default/src/ckan/.git
+        state: absent  
+
     - name: check requirements file name
       shell: "[ -f /usr/lib/ckan/default/src/ckan/pip-requirements.txt ] && echo 'pip-requirements.txt' || echo 'requirements.txt'"
       register: requirements_file_name
@@ -108,6 +113,11 @@
     - name: pull datapusher version
       action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.15
       when: datapusher == 'y'
+
+    - name: Recursively remove .git directory
+      file:
+        path: /usr/lib/ckan/datapusher/src/datapusher/.git
+        state: absent 
 
     - name: make virtualenv for datapusher (trusty)
       pip:
