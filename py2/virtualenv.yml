@@ -1,0 +1,8 @@
+---
+    - name: Install pip for Python2
+      action: command python /tmp/get-pip.py
+
+    - name: Install virtualenv for Python2
+      pip:
+        name: virtualenv
+        executable: /usr/local/bin/pip2

@@ -1,0 +1,19 @@
+---
+    - name: install requirements version for Python3
+      pip:
+        requirements: /usr/lib/ckan/default/src/ckan/requirements.txt
+        virtualenv: /usr/lib/ckan/default
+        virtualenv_command: pyvenv
+
+    - name: install setuptools version for Python3
+      pip:
+        name: setuptools==44.1.0
+        virtualenv: /usr/lib/ckan/default
+        virtualenv_command: pyvenv
+    
+    - name: run setup.py develop for Python3 ckan 
+      action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python3 setup.py develop
+
+    - name: get ckan version
+      command: /usr/lib/ckan/default/bin/python3 -c "import ckan; print(ckan.__version__)"
+      register: ckan_version

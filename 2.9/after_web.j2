@@ -1,0 +1,59 @@
+#!/bin/bash
+
+if [ ! -f /etc/ckan/default/ckan.ini ];
+then
+    /usr/lib/ckan/default/bin/ckan generate config /etc/ckan/default/ckan.ini
+fi 
+
+if [ -f /etc/nginx/sites-enabled/default ];
+then
+	rm -f /etc/nginx/sites-enabled/default
+fi
+
+if [ ! -f /etc/nginx/sites-enabled/ckan ];
+then
+	ln -s /etc/nginx/sites-available/ckan /etc/nginx/sites-enabled/ckan
+fi
+
+if [ -d /usr/lib/ckan ];
+then
+	chown -R www-data:www-data /usr/lib/ckan
+fi
+
+if [ -d /etc/ckan ];
+then
+	chown -R www-data:www-data /etc/ckan
+fi
+
+
+for i in $CKAN_INSTALL/src/*
+do
+    if [ -d $i ] && [ $i != $CKAN_INSTALL/src/ckan ];
+    then
+
+        if [ -f $i/pip-requirements.txt ];
+        then
+            $CKAN_INSTALL/bin/pip install -r $i/pip-requirements.txt
+        fi
+        if [ -f $i/requirements.txt ];
+        then
+            $CKAN_INSTALL/bin/pip install -r $i/requirements.txt
+        fi
+        if [ -f $i/setup.py ];
+        then
+            cd $i
+            $CKAN_INSTALL/bin/python  $i/setup.py develop
+        fi
+    fi
+done
+
+{% if datapusher == 'y' %}
+
+    if [ ! -f /etc/ckan/datapusher_settings.py ];
+    then
+        cp /usr/lib/ckan/datapusher/src/datapusher/deployment/datapusher_settings.py /etc/ckan/
+    fi
+
+    cp /usr/lib/ckan/datapusher/src/datapusher/deployment/datapusher.wsgi /etc/ckan/
+
+{% endif %}

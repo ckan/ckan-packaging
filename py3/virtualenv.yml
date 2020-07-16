@@ -1,0 +1,7 @@
+---
+    - name: Install pip for Python3
+      action: command python3 /tmp/get-pip.py
+
+    - name: Install virtualenv for Python3
+      action: command python3 -m venv /usr/lib/ckan/default
+      

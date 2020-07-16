@@ -1,0 +1,4 @@
+---
+    - name: copy source who.ini to configuration folder
+      action: command cp /usr/lib/ckan/default/src/ckan/who.ini /etc/ckan/default/who.ini
+      

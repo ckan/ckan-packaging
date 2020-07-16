@@ -1,0 +1,25 @@
+---
+    - name: install uWSGI for CKAN 2.9
+      pip:
+        name: uwsgi
+        virtualenv: /usr/lib/ckan/default
+        virtualenv_command: pyvenv
+        
+    - name: create directories for CKAN 2.9
+      action: file path={{ item }} state=directory
+      with_items:
+          - /etc/ckan/default
+          - /etc/supervisor/conf.d
+
+    - name: copy source wsgi.py to configuration folder
+      action: command cp /usr/lib/ckan/default/src/ckan/wsgi.py /etc/ckan/default/wsgi.py
+
+    - name: copy source ckan-uwsgi.ini to configuration folder
+      action: command cp /usr/lib/ckan/default/src/ckan/ckan-uwsgi.ini /etc/ckan/default/ckan-uwsgi.ini
+
+    - name: copy all common needed web (and other) files for CKAN 2.9
+      action: copy src=common/{{ item }} dest=/{{ item }}
+      with_items:
+          - etc/nginx/sites-available/ckan
+          - etc/cron.daily/remove_old_sessions
+          - etc/supervisor/conf.d/ckan-uwsgi.conf

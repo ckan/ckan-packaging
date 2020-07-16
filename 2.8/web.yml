@@ -1,0 +1,12 @@
+---
+    - name: create directories for CKAN 2.8
+      action: file path={{ item }} state=directory
+     with_items:
+          - /etc/ckan/default
+
+    - name: copy all common needed web (and other) files for CKAN 2.8
+      action: copy src=common/{{ item }} dest=/{{ item }}
+      with_items:
+          - etc/nginx/sites-available/ckan
+          - etc/ckan/default/apache.wsgi
+          - etc/cron.daily/remove_old_sessions

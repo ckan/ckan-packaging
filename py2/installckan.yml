@@ -1,0 +1,16 @@
+---
+    - name: install requirements and make virtualenv for Python2
+      action: pip requirements=/usr/lib/ckan/default/src/ckan/{{ requirements_file_name.stdout }} virtualenv=/usr/lib/ckan/default/ virtualenv_python=python2.7
+    
+    - name: install setuptools version for Python2
+      pip: 
+        name: setuptools==44.1.0
+        virtualenv: /usr/lib/ckan/default
+        virtualenv_command: virtualenv-2.7
+
+    - name: run setup.py develop for Python2 ckan 
+      action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
+    
+    - name: get ckan version
+      command: /usr/lib/ckan/default/bin/python -c "import ckan; print(ckan.__version__)"
+      register: ckan_version
