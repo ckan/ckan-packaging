@@ -1,7 +1,7 @@
 ---
     - name: create directories for CKAN 2.7
       action: file path={{ item }} state=directory
-     with_items:
+      with_items:
           - /etc/ckan/default
 
     - name: copy all common needed web (and other) files for CKAN 2.7

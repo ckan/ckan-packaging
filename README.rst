@@ -8,16 +8,19 @@ Overview
 
 To create Debian packages of CKAN, install Vagrant and Ansible and run::
 
-    ./ckan-package -v dev-v2.8 -i 1
+    ./ckan-package -v dev-v2.9 -p py3 -i 1 -t focal
 
 If you omit the parameters you will be prompted for them.
 
 After Vagrant and Ansible have done their thing (it will take a while), you
 should end up with three deb files on the working folder::
 
-    python-ckan_dev-v2.8-trusty1_amd64.deb
-    python-ckan_dev-v2.8-xenial1_amd64.deb
-    python-ckan_dev-v2.8-bionic1_amd64.deb
+    python-ckan-py2_dev-v2.7-xenial1_amd64.deb
+    python-ckan-py2_dev-v2.8-xenial1_amd64.deb
+    python-ckan-py2_dev-v2.7-bionic1_amd64.deb
+    python-ckan-py2_dev-v2.8-bionic1_amd64.deb
+    python-ckan-py2_dev-v2.9-focal1_amd64.deb
+    python-ckan-py3_dev-v2.9-focal1_amd64.deb
 
 Keep reading for more options and to learn how it works.
 
@@ -30,9 +33,9 @@ configured in a `multi-machine <https://docs.vagrantup.com/v2/multi-machine>`_ s
 
 Each machine is running one of the supported distributions that we target, currently:
 
-* Ubuntu 14.04 64bit (trusty)
 * Ubuntu 16.04 64bit (xenial)
 * Ubuntu 18.04 64bit (bionic)
+* Ubuntu 20.04 64bit (focal)
 
 We use `Ansible <http://ansible.com>`_ to provision the Vagrant machines, which
 results in the creation of the package. Ansible is configured via
@@ -85,17 +88,15 @@ full list of options and parameters::
 
 Most of the times you will want to run something like the following::
 
-    ./ckan-package -v dev-v2.8 -i 1
+    ./ckan-package -v dev-v2.8 -p py3 -i 1 -t focal
 
 Where:
 
  * -v (version) relates to the CKAN  branch or tag to build, eg master, dev-v2.6, release-v2.5.3
+ * -p (python version) relates to the version of Python  eg py2, py3
  * -i (iteration) e.g. `beta1` for a beta or for a proper release use a number e.g. `1`
+ * -t (target) will build just for that version of Ubuntu
 
-This will build three packages successively, one for trusty, one for xenial and one for bionic. If you
-only want to target one distribution, you can pass the ``-t`` parameter::
-
-    ./ckan-package --version dev-v2.8 --iteration 1 --target bionic
 
 The first time that you run the build commands Vagrant will
 need to download the OS images from the central repository, this might take a while.

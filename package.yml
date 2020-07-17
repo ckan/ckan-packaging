@@ -34,10 +34,16 @@
     - debug:
         var: pythonversion
 
-    # Stop Apache for CKAN 2.8 or CKAN 2.7
-    - name: CKAN 2.8 / 2.7 - stop apache before installing nginx
+    - name: Check if apache service exists
+      stat: path=/etc/init.d/apache2
+      register: apache_status
+    - debug:
+        var: apache_status
+  
+    - name: Stop apache if it's running
       service: name=apache2 state=stopped
-      when: (ckanver[0] == "2.8") or (ckanver[0] == "2.7")
+      when: apache_status.stat.exists
+      register: apache_stopped
 
     - name: make sure nginx is installed
       action: apt pkg=nginx state=present update_cache=yes
