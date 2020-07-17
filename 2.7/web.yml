@@ -9,4 +9,5 @@
       with_items:
           - etc/nginx/sites-available/ckan
           - etc/ckan/default/apache.wsgi
+          - etc/apache2/sites-available/ckan_default.conf
           - etc/cron.daily/remove_old_sessions

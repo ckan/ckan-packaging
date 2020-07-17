@@ -79,6 +79,12 @@
     - name: pull ckan software
       action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version={{ version }}
 
+    # Clean up CKAN distro 
+    - name: Recursively remove .git directory
+      file:
+        path: /usr/lib/ckan/default/src/ckan/.git
+        state: absent
+
     ## - name: See whats going on
     ## action: command ls -l /usr/lib/ckan/default/bin
 
@@ -105,6 +111,13 @@
     - name: Install Packages 
       include_tasks: "py3/datapusher.yml"
       when: (pythonversion == "py3") and (datapusher == 'y')
+
+    # Clean up datapusher distro 
+    - name: Recursively remove .git directory
+      file:
+        path: /usr/lib/ckan/datapusher/src/datapusher/.git
+        state: absent 
+      when: datapusher == 'y'
 
     # Install web files and dependancies for CKAN 2.9
     - name: Install web and dependancies for CKAN 2.9
