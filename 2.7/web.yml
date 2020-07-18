@@ -3,6 +3,7 @@
       action: file path={{ item }} state=directory
       with_items:
           - /etc/ckan/default
+          - /etc/apache2/sites-available
 
     - name: copy all common needed web (and other) files for CKAN 2.7
       action: copy src=common/{{ item }} dest=/{{ item }}
