@@ -76,15 +76,15 @@ If not provided you will be propmt for it''')
 If not provided you will be propmt for it''')
     parser.add_argument('-i', '--iteration',
                         help='''The iteration number to add to the package name.
-If not provided you will be propmt for it''')
+If not provided you will be prompt for it''')
     parser.add_argument('-d', '--datapusher',
                         action='store_true',
                         default='y',
                         help='''Whether to add the DataPusher to the package,
 defaults to true''')
     parser.add_argument('-t', '--target',
-                        help='''The distribution to target (trusty or xenial or bionic).
-If omitted, both are built''')
+                        help='''The distribution to target (xenial or bionic or focal).
+If omitted, all are built''')
     parser.add_argument('-a', '--ansible-verbose',
                         default='vv',
                         help='Ansible verbosity level, defaults to "vv"')
