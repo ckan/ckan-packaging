@@ -108,6 +108,12 @@ If omitted, both are built''')
     if target and target not in ('xenial', 'bionic', 'focal'):
         print 'Wrong target: ' + target
         sys.exit(1)
+    
+    if target and target in ('xenial','bionic'):
+        if pythonversion!="py2":
+            print 'Target: ' + target + ' - Python version should be set to py2'
+            sys.exit(1)
+            
     ansible_verbose = args.ansible_verbose
 
     set_env_vars(version, pythonversion, iteration, datapusher, ansible_verbose)
