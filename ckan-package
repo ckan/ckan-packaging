@@ -51,6 +51,7 @@ def run(target=None):
     if (status_xenial and status_xenial != 'running') or \
             (status_bionic and status_bionic != 'running') or \
                 (status_focal and status_focal != 'running'):
+        
         print 'Starting up machine(s)'
         command = ['vagrant', 'up', '--provision']
     else:
