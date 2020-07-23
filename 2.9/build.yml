@@ -18,5 +18,5 @@
             --version {{ ckan_version.stdout }}
             --depends nginx --depends libpq5
             --config-files /etc/nginx/sites-available/ckan --config-files /etc/ckan/default/who.ini
-            /usr/lib/ckan/ /etc/ckan/ /etc/cron.daily/remove_old_sessions  /etc/nginx/sites-available/ckan
+            /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions  /etc/nginx/sites-available/ckan
             /etc/supervisor/conf.d/ckan-uwsgi.conf
