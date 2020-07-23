@@ -1,5 +1,5 @@
 ---
-- name: Make sure Python2 packages are installed
+- name: Make sure Python2 apt packages are installed
   apt:
     update_cache: yes
     force_apt_get: yes
