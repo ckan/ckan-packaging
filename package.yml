@@ -24,13 +24,10 @@
     - debug:
         var: ckanver[0]
     
-    # Install Ubuntu apt Packages
-    - name: Install apt Packages 
-      include_tasks: "py2/package.yml"
-      when: pythonversion == "py2"
-    - name: Install Packages 
-      include_tasks: "py3/package.yml"
-      when: pythonversion == "py3"
+    # Install Ubuntu apt packages
+    - name: Install Ubuntu apt Packages 
+      include_tasks: "{{ pythonversion }}/apt.yml"
+
     - debug:
         var: pythonversion
 
@@ -69,11 +66,7 @@
 
     # Install pip and virtualenv
     - name: Install apt Packages 
-      include_tasks: "py2/virtualenv.yml"
-      when: pythonversion == "py2"
-    - name: Install Packages 
-      include_tasks: "py3/virtualenv.yml"
-      when: pythonversion == "py3"
+      include_tasks: "{{ pythonversion }}/virtualenv.yml"
 
     # Pull CKAN 
     - name: pull ckan software
@@ -85,9 +78,6 @@
         path: /usr/lib/ckan/default/src/ckan/.git
         state: absent
 
-    ## - name: See whats going on
-    ## action: command ls -l /usr/lib/ckan/default/bin
-
     - name: check requirements file name
       shell: "[ -f /usr/lib/ckan/default/src/ckan/pip-requirements.txt ] && echo 'pip-requirements.txt' || echo 'requirements.txt'"
       register: requirements_file_name
@@ -97,20 +87,12 @@
 
     # Install ckan and dependancies
     - name: Install ckan and dependancies
-      include_tasks: "py2/installckan.yml"
-      when: pythonversion == "py2"
-
-    - name: Install Packages 
-      include_tasks: "py3/installckan.yml"
-      when: pythonversion == "py3"
+      include_tasks: "{{ pythonversion }}/installckan.yml"
 
     # Install datapusher
-    - name: Install datapusher for Python 2 
-      include_tasks: "py2/datapusher.yml"
-      when: (pythonversion == "py2") and (datapusher == 'y')
-    - name: Install Packages 
-      include_tasks: "py3/datapusher.yml"
-      when: (pythonversion == "py3") and (datapusher == 'y')
+    - name: Install datapusher 
+      include_tasks: "{{ pythonversion }}/datapusher.yml"
+      when: datapusher == 'y'
 
     # Clean up datapusher distro 
     - name: Recursively remove .git directory
@@ -119,63 +101,19 @@
         state: absent 
       when: datapusher == 'y'
 
-    # Install web files and dependancies for CKAN 2.9
-    - name: Install web and dependancies for CKAN 2.9
-      include_tasks: "2.9/web.yml"
-      when: ckanver[0] == "2.9"
-
-    # Install web files and dependancies for CKAN 2.8
-    - name: Install web and dependancies for CKAN 2.8
-      include_tasks: "2.8/web.yml"
-      when: ckanver[0] == "2.8"
+    # Install web files and dependancies
+    - name: Install web and dependancies
+      include_tasks: "{{ ckanver[0] }}/web.yml"
     
-    # Install web files and dependancies for CKAN 2.7
-    - name: Install web and dependancies for CKAN 2.7
-      include_tasks: "2.7/web.yml"
-      when: ckanver[0] == "2.7"
-    
-    # Copy other application files CKAN 2.9
-    - name: Copy other application files for CKAN 2.9
-      include_tasks: "2.9/app.yml"
-      when: ckanver[0] == "2.9"
+    # Copy other application files CKAN
+    - name: Copy other application files for CKAN
+      include_tasks: "{{ ckanver[0] }}/app.yml"
 
-    # Copy other application files for CKAN 2.8
-    - name: Copy other application files for CKAN 2.8
-      include_tasks: "2.8/app.yml"
-      when: ckanver[0] == "2.8"
-    
-    # Copy other application files for CKAN 2.7
-    - name: Copy other application files for CKAN 2.7
-      include_tasks: "2.7/app.yml"
-      when: ckanver[0] == "2.7"
+    # template the after web script
+    - name: template the after web script
+      action: template src={{ ckanver[0] }}/after_web.j2 dest=/tmp/after_web.sh mode=744
 
-    # template the after web script for CKAN 2.9
-    - name: template the after web script for CKAN 2.9
-      action: template src=2.9/after_web.j2 dest=/tmp/after_web.sh mode=744
-      when: ckanver[0] == "2.9"
-
-    # template the after web script for CKAN 2.8
-    - name: template the after web script for CKAN 2.8
-      action: template src=2.8/after_web.j2 dest=/tmp/after_web.sh mode=744
-      when: ckanver[0] == "2.8"
-  
-    # template the after web script for CKAN 2.7
-    - name: template the after web script for CKAN 2.7
-      action: template src=2.7/after_web.j2 dest=/tmp/after_web.sh mode=744
-      when: ckanver[0] == "2.7"
-
-    # Build deb package for ckan 2.9
-    - name: Build deb package for CKAN 2.9
-      include_tasks: "2.9/build.yml"
-      when: ckanver[0] == "2.9"
-
-    # Build deb package for ckan 2.8
-    - name: Build deb package for CKAN 2.8
-      include_tasks: "2.8/build.yml"
-      when: ckanver[0] == "2.8"
-    
-    # Build deb package for ckan 2.7
-    - name: Build deb package for CKAN 2.7
-      include_tasks: "2.7/build.yml"
-      when: ckanver[0] == "2.7"
+    # Build deb package for CKAN
+    - name: Build deb package for CKAN
+      include_tasks: "{{ ckanver[0] }}/build.yml"
     
