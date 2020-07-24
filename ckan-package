@@ -27,34 +27,37 @@ def clear_env_vars():
             del os.environ[key]
 
 
+def get_status(out, target):
+    return re.search(target + '\s*(\w+)', out).group(1)
+
 def run(target=None):
 
     status_xenial = None
     status_bionic = None
     status_focal = None
 
-    print 'Checking Vagrant machines status...'
-    out = subprocess.check_output(['vagrant', 'status'])
+    print('Checking Vagrant machines status...')
+    out = subprocess.check_output(['vagrant', 'status']).decode('utf8')
 
     if target is None or target == 'xenial':
-            status_xenial = re.search('xenial\s*(\w+)', out).group(1)
-            print 'Machine "xenial" is ' + status_xenial
-            
+        status_bionic = get_status(out, 'xenial')
+        print('Machine "xenial" is ' + status_xenial)
+
     if target is None or target == 'bionic':
-            status_bionic = re.search('bionic\s*(\w+)', out).group(1)
-            print 'Machine "bionic" is ' + status_bionic
+        status_bionic = get_status(out, 'bionic')
+        print('Machine "bionic" is ' + status_bionic)
 
     if target is None or target == 'focal':
-            status_focal = re.search('focal\s*(\w+)', out).group(1)
-            print 'Machine "focal" is ' + status_focal
+        status_focal = get_status(out, 'focal')
+        print('Machine "focal" is ' + status_focal)
 
     if (status_xenial and status_xenial != 'running') or \
             (status_bionic and status_bionic != 'running') or \
                 (status_focal and status_focal != 'running'):
-        print 'Starting up machine(s)'
+        print('Starting up machine(s)')
         command = ['vagrant', 'up', '--provision']
     else:
-        print 'Machine(s) already started, provisioning'
+        print('Machine(s) already started, provisioning')
         command = ['vagrant', 'provision']
 
     if target:
@@ -92,7 +95,10 @@ If omitted, all are built''')
     def _check_arg(args, var, prompt):
         if getattr(args, var):
             return getattr(args, var)
-        var = raw_input('{0}:'.format(prompt))
+        try:
+            var = raw_input('{0}:'.format(prompt))
+        except NameError:
+            var = input('{0}:'.format(prompt))
         if not var:
             print('Please provide a value for the {0}'.format(prompt))
             sys.exit(1)
@@ -106,14 +112,14 @@ If omitted, all are built''')
     datapusher = args.datapusher
     target = args.target
     if target and target not in ('xenial', 'bionic', 'focal'):
-        print 'Wrong target: ' + target
+        print('Wrong target: ' + target)
         sys.exit(1)
-    
+
     if target and target in ('xenial','bionic'):
         if pythonversion!="py2":
-            print 'Target: ' + target + ' - Python version should be set to py2'
+            print('Target: ' + target + ' - Python version should be set to py2')
             sys.exit(1)
-            
+
     ansible_verbose = args.ansible_verbose
 
     set_env_vars(version, pythonversion, iteration, datapusher, ansible_verbose)
