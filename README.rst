@@ -12,15 +12,12 @@ To create Debian packages of CKAN, install Vagrant and Ansible and run::
 
 If you omit the parameters you will be prompted for them.
 
-After Vagrant and Ansible have done their thing (it will take a while), you
-should end up with three deb files on the working folder::
+The following combinations of packages are valid::
 
-    python-ckan-py2_dev-v2.7-xenial1_amd64.deb
-    python-ckan-py2_dev-v2.8-xenial1_amd64.deb
-    python-ckan-py2_dev-v2.7-bionic1_amd64.deb
-    python-ckan-py2_dev-v2.8-bionic1_amd64.deb
-    python-ckan-py2_dev-v2.9-focal1_amd64.deb
-    python-ckan-py3_dev-v2.9-focal1_amd64.deb
+    CKAN 2.9    Python3, Python2    focal, bionic, xenial
+    CKAN 2.8    Python2             focal, bionic, xenial
+    CKAN 2.7    Python2             focal, bionic, xenial
+    
 
 Keep reading for more options and to learn how it works.
 
