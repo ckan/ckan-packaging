@@ -7,7 +7,7 @@
     - name: build deb main
       action: command chdir=/vagrant fpm
             -t deb -s dir
-            --name python-ckan-{{ pythonversion }}
+            --name python-ckan
             --description='CKAN is an open-source DMS (data management system) for powering data hubs and data portals.'
             --license='AGPL v3.0'
             --maintainer='CKAN team <ckan-dev@lists.okfn.org>'
@@ -15,7 +15,7 @@
             --url='http://ckan.org'
             --after-install=/tmp/after_web.sh
             --iteration {{ ansible_distribution_release }}{{ iteration }}
-            --version {{ ckan_version.stdout }}
+            --version {{ ckan_version.stdout }}-{{ pythonversion }}
             --depends nginx --depends libpq5
             --config-files /etc/nginx/sites-available/ckan --config-files /etc/ckan/default/who.ini
             /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions  /etc/nginx/sites-available/ckan

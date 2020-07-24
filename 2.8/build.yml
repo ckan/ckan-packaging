@@ -2,7 +2,7 @@
     - name: build deb main
       action: command chdir=/vagrant fpm
             -t deb -s dir
-            --name python-ckan-{{ pythonversion }}
+            --name python-ckan
             --description='CKAN is an open-source DMS (data management system) for powering data hubs and data portals.'
             --license='AGPL v3.0'
             --maintainer='CKAN team <ckan-dev@lists.okfn.org>'
