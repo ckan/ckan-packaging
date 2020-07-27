@@ -23,3 +23,4 @@
           - etc/nginx/sites-available/ckan
           - etc/cron.daily/remove_old_sessions
           - etc/supervisor/conf.d/ckan-uwsgi.conf
+          - etc/supervisor/conf.d/ckan-worker.conf
