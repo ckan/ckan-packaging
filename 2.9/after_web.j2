@@ -25,6 +25,13 @@ then
 	chown -R www-data:www-data /etc/ckan
 fi
 
+if [ ! -d /var/log/ckan ];
+then
+    mkdir /var/log/ckan
+fi
+chown -R www-data:adm /var/log/ckan
+
+
 
 for i in $CKAN_INSTALL/src/*
 do
