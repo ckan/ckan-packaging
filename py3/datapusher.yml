@@ -1,18 +1,44 @@
 ---
-    # Pull datapusher
     - name: pull datapusher version
-      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.15
+      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.17
 
-    # Install datapusher Virtual environment for Python 3
     - name: Install Python3 Virtual Environment for datapusher for Python 3
       action: command python3 -m venv /usr/lib/ckan/datapusher  
 
-    # Install datapusher requirements for Python 3
     - name: install requirements for datapusher for Python 3
       pip:
         requirements: /usr/lib/ckan/datapusher/src/datapusher/requirements.txt
         virtualenv: /usr/lib/ckan/datapusher
         virtualenv_command: pyvenv
 
+    - name: install uWSGI for DataPusher
+      pip:
+        name: uwsgi
+        virtualenv: /usr/lib/ckan/datapusher
+        virtualenv_command: pyvenv
+
     - name: run setup.py develop for datapusher
       action: command chdir=/usr/lib/ckan/datapusher/src/datapusher/ ../../bin/python setup.py develop
+
+    - name: create directories for DataPusher
+      action: file path={{ item }} state=directory
+      with_items:
+          - /etc/ckan/datapusher
+
+    - name: copy all deployment files needed for the DataPusher
+      action: command cp /usr/lib/ckan/datapusher/src/datapusher/deployment/{{ item }} /etc/ckan/datapusher/{{ item }}
+      with_items:
+          - datapusher.wsgi
+          - datapusher_settings.py
+          - datapusher-uwsgi.ini
+
+    - name: copy all common needed files for DataPusher
+      action: copy src=common/{{ item }} dest=/{{ item }}
+      with_items:
+          - etc/supervisor/conf.d/ckan-datapusher.conf
+
+    - name: replace datapusher wsgi file path
+      replace:
+         path: /etc/ckan/datapusher/datapusher-uwsgi.ini
+         regexp: '/usr/lib/ckan/datapusher/src/datapusher/deployment/datapusher.wsgi'
+         replace: '/etc/ckan/datapusher/datapusher.wsgi'

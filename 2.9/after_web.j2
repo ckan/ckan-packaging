@@ -53,14 +53,3 @@ do
         fi
     fi
 done
-
-{% if datapusher == 'y' %}
-
-    if [ ! -f /etc/ckan/datapusher_settings.py ];
-    then
-        cp /usr/lib/ckan/datapusher/src/datapusher/deployment/datapusher_settings.py /etc/ckan/
-    fi
-
-    cp /usr/lib/ckan/datapusher/src/datapusher/deployment/datapusher.wsgi /etc/ckan/
-
-{% endif %}
