@@ -2,3 +2,4 @@ hosts
 .vagrant
 python-ckan*
 package.retry
+.vscode
