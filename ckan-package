@@ -40,7 +40,7 @@ def run(target=None):
     out = subprocess.check_output(['vagrant', 'status']).decode('utf8')
 
     if target is None or target == 'xenial':
-        status_bionic = get_status(out, 'xenial')
+        status_xenial = get_status(out, 'xenial')
         print('Machine "xenial" is ' + status_xenial)
 
     if target is None or target == 'bionic':
