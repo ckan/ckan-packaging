@@ -17,7 +17,9 @@
   tasks:
     - name: set regex for CKAN version
       set_fact:
-        re: '\D+\-\D+(?P<capture>\d+\.\d+)'
+        # first re: for dev-v2.9 format, second re: for ckan-2.8.5 format
+        #re: '\D+\-\D+(?P<capture>\d+\.\d+)'
+        re: '\D+-(?P<capture>\d+\.\d)\.\d'
     - set_fact:
         ckanver: "{{ version | regex_search(re, '\\g<capture>') }}"
         register: ckanver
