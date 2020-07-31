@@ -7,14 +7,6 @@
         requirements: /usr/lib/ckan/default/src/ckan/requirements-py2.txt
         virtualenv: /usr/lib/ckan/default
         virtualenv_command: virtualenv-2.7
-      when: ckanver[0] == "2.9"
-
-    - name: install requirements version for Python2  (CKAN 2.8 or 2.7)
-      pip: 
-        requirements: /usr/lib/ckan/default/src/ckan/requirements.txt
-        virtualenv: /usr/lib/ckan/default
-        virtualenv_command: virtualenv-2.7
-      when: (ckanver[0] == "2.8") or (ckanver[0] == "2.7")
 
     - name: install setuptools version for Python2
       pip: 
