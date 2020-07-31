@@ -30,6 +30,7 @@ def clear_env_vars():
 def get_status(out, target):
     return re.search(target + '\s*(\w+)', out).group(1)
 
+
 def run(target=None):
 
     status_xenial = None
