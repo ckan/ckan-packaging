@@ -41,7 +41,7 @@ def run(target=None):
     if target is None or target == 'xenial':
             status_xenial = re.search('xenial\s*(\w+)', out).group(1)
             print 'Machine "xenial" is ' + status_xenial
-            
+
     if target is None or target == 'bionic':
             status_bionic = re.search('bionic\s*(\w+)', out).group(1)
             print 'Machine "bionic" is ' + status_bionic
@@ -59,6 +59,23 @@ def run(target=None):
         command.append(target)
 
     subprocess.call(command)
+
+
+def minor_version(version_string):
+    pattern = r'\D+\D+(?P<capture>\d+\.\d+)'
+    version_number = re.search(pattern, version_string)
+    if version_number:
+        parts = version_number.groups(0)[0].split('.')
+        try:
+            if len(parts) == 3:
+                # ckan-2.8.5
+                return int(parts[1])
+            else:
+                # dev-v2.8
+                return int(parts[-1])
+        except ValueError:
+            pass
+    raise ValueError('Could not parse version number: %s' % version_string)
 
 
 if __name__ == '__main__':
@@ -99,6 +116,11 @@ If omitted, both are built''')
     iteration = _check_arg(args, 'iteration', 'Iteration')
     datapusher = args.datapusher
     target = args.target
+
+    if minor_version(version) > 8:
+        print('This version of the scripts can only package up to CKAN 2.8')
+        sys.exit(1)
+
     if target and target not in ('trusty', 'xenial', 'bionic'):
         print 'Wrong target: ' + target
         sys.exit(1)
