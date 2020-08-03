@@ -15,15 +15,16 @@ then
 	ln -s /etc/nginx/sites-available/ckan /etc/nginx/sites-enabled/ckan
 fi
 
-if [ -d /usr/lib/ckan ];
-then
-	chown -R www-data:www-data /usr/lib/ckan
-fi
-
 if [ -d /etc/ckan ];
 then
 	chown -R www-data:www-data /etc/ckan
 fi
+
+if [ ! -d /var/lib/ckan/default/uploads/storage/uploads/user ];
+then
+    mkdir -p /var/lib/ckan/default/storage/uploads/user
+fi
+chown -R www-data:www-data /var/lib/ckan/default
 
 if [ ! -d /var/log/ckan ];
 then
