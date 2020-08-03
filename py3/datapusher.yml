@@ -24,6 +24,7 @@
       action: file path={{ item }} state=directory
       with_items:
           - /etc/ckan/datapusher
+          - /etc/supervisor/conf.d
 
     - name: copy all deployment files needed for the DataPusher
       action: command cp /usr/lib/ckan/datapusher/src/datapusher/deployment/{{ item }} /etc/ckan/datapusher/{{ item }}
