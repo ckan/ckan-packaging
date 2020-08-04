@@ -26,11 +26,11 @@ then
 fi
 chown -R www-data:www-data /var/lib/ckan/default
 
-if [ ! -d /usr/lib/ckan/default/src/ckan/ckan/public/base/i18n/ ];
+if [ ! -d /usr/lib/ckan/default/src/ckan/ckan/public/base/ ];
 then
-    mkdir -p /usr/lib/ckan/default/src/ckan/ckan/public/base/i18n/
+    mkdir -p /usr/lib/ckan/default/src/ckan/ckan/public/base/
 fi
-chown -R www-data:www-data /usr/lib/ckan/default/src/ckan/ckan/public/base/i18n/
+chown -R www-data:www-data /usr/lib/ckan/default/src/ckan/ckan/public/base/
 
 if [ ! -d /var/log/ckan ];
 then
