@@ -1,0 +1,15 @@
+---
+- name: Make sure Python2 apt packages are installed
+  apt:
+    update_cache: yes
+    force_apt_get: yes
+    name:
+      - 'git-core'
+      - 'python-dev'
+      - 'postgresql'
+      - 'libpq-dev'
+      - 'libxml2-dev'
+      - 'libxslt1-dev'
+      - 'build-essential'
+      - 'rubygems-integration'
+      - 'ruby-dev'

@@ -4,6 +4,9 @@
    - name: version
      prompt: "CKAN Version (branch or tag)"
      private: True
+   - name: pythonversion
+     prompt: "Python Version (py2 or py3)"
+     private: True
    - name: iteration
      prompt: "Iteration"
      private: True
@@ -12,42 +15,36 @@
      default: "y"
      private: True
   tasks:
-    - name: make sure packages are installed
-      apt:
-        update_cache: yes
-        force_apt_get: yes
-        name:
-          - 'git-core'
-          - 'python-dev'
-          - 'postgresql'
-          - 'libpq-dev'
-          - 'libxml2-dev'
-          - 'libxslt1-dev'
-          - 'build-essential'
-          - 'apache2'
-          - 'libapache2-mod-wsgi'
-          - 'rubygems-integration'
-          - 'ruby-dev'
+    - name: set regex for CKAN version
+      set_fact:
+        re: '\D+\D+(?P<capture>\d+\.\d+)'
+    - set_fact:
+        ckanver: "{{ version | regex_search(re, '\\g<capture>') }}"
+        register: ckanver
+    - debug:
+        var: ckanver[0]
+    
+    # Install Ubuntu apt packages
+    - name: Install Ubuntu apt Packages 
+      include_tasks: "{{ pythonversion }}/apt.yml"
 
+    - debug:
+        var: pythonversion
 
-    - name: stop apache before installing nginx (xenial)
+    - name: Check if apache service exists
+      stat: path=/etc/init.d/apache2
+      register: apache_status
+  
+    - name: Stop apache if it's running
       service: name=apache2 state=stopped
-      when: (ansible_distribution_version == "16.04") or (ansible_distribution_version == "18.04")
+      when: apache_status.stat.exists
+      register: apache_stopped
 
     - name: make sure nginx is installed
       action: apt pkg=nginx state=present update_cache=yes
 
     - name: install fpm
-      action: command gem install -v 0.4.21 fpm creates=/usr/local/bin/fpm
-      when: ansible_distribution_version == "14.04"
-
-    - name: install fpm (xenial)
       action: command gem install -v 1.11.0 fpm -- creates=/usr/local/bin/fpm
-      when: ansible_distribution_version == "16.04"
-      
-    - name: install fpm (bionic)
-      action: command gem install -v 1.11.0 fpm -- creates=/usr/local/bin/fpm
-      when: ansible_distribution_version == "18.04"
 
     - name: delete old directories
       action: file path={{ item }} state=absent
@@ -56,126 +53,62 @@
         - /usr/lib/ckan
         - /root/.cache/pip
 
-    - name: get setupttols (I)
+    - name: get setuptools (I)
       action: get_url url=https://bootstrap.pypa.io/ez_setup.py dest=/tmp
-
-    - name: get setupttols (II)
+  
+    - name: get setuptools (II)
       action: command python /tmp/ez_setup.py
-
+  
     - name: get pip (I)
       action: get_url url=https://bootstrap.pypa.io/get-pip.py dest=/tmp
 
-    - name: get pip (II)
-      action: command python /tmp/get-pip.py
+    # Install pip and virtualenv
+    - name: Install apt Packages 
+      include_tasks: "{{ pythonversion }}/virtualenv.yml"
 
-    - name: install virtualenv
-      pip:
-        name: virtualenv
-        executable: /usr/local/bin/pip2
-      when: ansible_distribution_version != "14.04"
-
-    - name: install virtualenv
-      apt:
-        name: python-virtualenv
-      when: ansible_distribution_version == "14.04"
-
-    - name: pull ckan version
+    # Pull CKAN 
+    - name: pull ckan software
       action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version={{ version }}
 
+    # Clean up CKAN distro 
     - name: Recursively remove .git directory
       file:
         path: /usr/lib/ckan/default/src/ckan/.git
-        state: absent  
-
+        state: absent
+    
+    # Check requirements
     - name: check requirements file name
       shell: "[ -f /usr/lib/ckan/default/src/ckan/pip-requirements.txt ] && echo 'pip-requirements.txt' || echo 'requirements.txt'"
       register: requirements_file_name
 
-    - name: install requirements and make virtualenv for ckan
-      action: pip requirements=/usr/lib/ckan/default/src/ckan/{{ requirements_file_name.stdout }} virtualenv=/usr/lib/ckan/default/ virtualenv_python=python2.7
+    # Install ckan and dependancies
+    - name: Install ckan and dependancies
+      include_tasks: "{{ pythonversion }}/installckan.yml"
 
-    - name: install setuptools version
-      pip:
-        name:
-          - setuptools==36.1
-        virtualenv: /usr/lib/ckan/default/
-        virtualenv_python: python2.7
-      when: ansible_distribution_version == "14.04"
-
-
-    - name: run setup.py develop for ckan
-      action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python setup.py develop
-
-    - name: get ckan version
-      command: /usr/lib/ckan/default/bin/python -c "import ckan; print ckan.__version__"
-      register: ckan_version
-
-    - name: pull datapusher version
-      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.15
+    # Install datapusher
+    - name: Install datapusher 
+      include_tasks: "{{ pythonversion }}/datapusher.yml"
       when: datapusher == 'y'
 
+    # Clean up datapusher distro 
     - name: Recursively remove .git directory
       file:
         path: /usr/lib/ckan/datapusher/src/datapusher/.git
         state: absent 
-
-    - name: make virtualenv for datapusher (trusty)
-      pip:
-        name:
-          - pip==20.0.2
-        virtualenv: /usr/lib/ckan/datapusher/
-        virtualenv_python: python2.7
-      when: datapusher == 'y' and ansible_distribution_version == "14.04"
-
-    - name: install requirements and make virtualenv for datapusher
-      action: pip requirements=/usr/lib/ckan/datapusher/src/datapusher/requirements.txt virtualenv=/usr/lib/ckan/datapusher/ virtualenv_python=python2.7
       when: datapusher == 'y'
 
-    - name: run setup.py develop for datapusher
-      action: command chdir=/usr/lib/ckan/datapusher/src/datapusher/ ../../bin/python setup.py develop
-      when: datapusher == 'y'
+    # Install web files and dependancies
+    - name: Install web and dependancies
+      include_tasks: "{{ ckanver[0] }}/web.yml"
+    
+    # Copy other application files CKAN
+    - name: Copy other application files for CKAN
+      include_tasks: "{{ ckanver[0] }}/app.yml"
 
-    - name: create directories
-      action: file path={{ item }} state=directory
-      with_items:
-        - /etc/ckan/default
-        - /var/www/build
-
-    - name: copy all common needed files
-      action: copy src=common/{{ item }} dest=/{{ item }}
-      with_items:
-        - etc/ckan/default/apache.wsgi
-        - etc/nginx/sites-available/ckan
-        - etc/cron.daily/remove_old_sessions
-
-    - name: copy all distribution specific files
-      action: copy src={{ ansible_distribution_release }}/{{ item }} dest=/{{ item }}
-      with_items:
-        - etc/apache2/sites-available/ckan_default.conf
-
-    - name: copy source who.ini to configuration folder
-      action: command cp /usr/lib/ckan/default/src/ckan/who.ini /etc/ckan/default/who.ini
-
-    - name: copy executables
-      action: copy src=common/{{ item }} dest=/{{ item }} mode=744
-      with_items:
-        - usr/bin/ckan
-
+    # template the after web script
     - name: template the after web script
-      action: template src=common/tmp/after_web.j2 dest=/tmp/after_web.sh mode=744
+      action: template src={{ ckanver[0] }}/after_web.j2 dest=/tmp/after_web.sh mode=744
 
-    - name: build deb main
-      action: command chdir=/vagrant fpm
-              -t deb -s dir
-              --name python-ckan
-              --description='CKAN is an open-source DMS (data management system) for powering data hubs and data portals.'
-              --license='AGPL v3.0'
-              --maintainer='CKAN team <ckan-dev@lists.okfn.org>'
-              --vendor='CKAN Association'
-              --url='http://ckan.org'
-              --after-install=/tmp/after_web.sh
-              --iteration {{ ansible_distribution_release }}{{ iteration }}
-              --version {{ ckan_version.stdout }}
-              --depends nginx --depends apache2 --depends libapache2-mod-wsgi --depends libpq5
-              --config-files /etc/apache2/sites-available/ckan_default.conf --config-files /etc/nginx/sites-available/ckan --config-files /etc/ckan/default/who.ini
-              /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan_default.conf /etc/nginx/sites-available/ckan
+    # Build deb package for CKAN
+    - name: Build deb package for CKAN
+      include_tasks: "{{ ckanver[0] }}/build.yml"

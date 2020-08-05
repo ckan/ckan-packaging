@@ -1,0 +1,9 @@
+/var/log/ckan/ckan-*.stderr.log {
+  copytruncate                                                              
+  daily
+  rotate 20
+  compress
+  delaycompress
+  missingok                                                    
+  create 640 www-data adm
+}

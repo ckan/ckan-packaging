@@ -7,9 +7,10 @@ import sys
 import argparse
 
 
-def set_env_vars(version, iteration, datapusher='y', ansible_verbose='vv'):
+def set_env_vars(version, pythonversion, iteration, datapusher='y', ansible_verbose='vv'):
 
     os.environ['CKAN_PACKAGE_VERSION'] = version
+    os.environ['PYTHON_VERSION'] = pythonversion
     os.environ['CKAN_PACKAGE_ITERATION'] = iteration
     os.environ['CKAN_PACKAGE_DATAPUSHER'] = datapusher
     os.environ['CKAN_PACKAGE_ANSIBLE_VERBOSE'] = ansible_verbose
@@ -18,6 +19,7 @@ def set_env_vars(version, iteration, datapusher='y', ansible_verbose='vv'):
 def clear_env_vars():
 
     for key in ['CKAN_PACKAGE_VERSION',
+                'PYTHON_VERSION',
                 'CKAN_PACKAGE_ITERATION',
                 'CKAN_PACKAGE_DATAPUSHER',
                 'CKAN_PACKAGE_ANSIBLE_VERBOSE']:
@@ -28,18 +30,15 @@ def clear_env_vars():
 def get_status(out, target):
     return re.search(target + '\s*(\w+)', out).group(1)
 
+
 def run(target=None):
 
-    status_trusty = None
     status_xenial = None
     status_bionic = None
+    status_focal = None
 
     print('Checking Vagrant machines status...')
     out = subprocess.check_output(['vagrant', 'status']).decode('utf8')
-
-    if target is None or target == 'trusty':
-        status_trusty = re.search('trusty\s*(\w+)', out).group(1)
-        print ('Machine "trusty" is ' + status_trusty)
 
     if target is None or target == 'xenial':
         status_xenial = get_status(out, 'xenial')
@@ -49,9 +48,13 @@ def run(target=None):
         status_bionic = get_status(out, 'bionic')
         print('Machine "bionic" is ' + status_bionic)
 
-    if (status_trusty and status_trusty != 'running') or \
-            (status_xenial and status_xenial != 'running') or \
-                (status_bionic and status_bionic != 'running'):
+    if target is None or target == 'focal':
+        status_focal = get_status(out, 'focal')
+        print('Machine "focal" is ' + status_focal)
+
+    if (status_xenial and status_xenial != 'running') or \
+            (status_bionic and status_bionic != 'running') or \
+                (status_focal and status_focal != 'running'):
         print('Starting up machine(s)')
         command = ['vagrant', 'up', '--provision']
     else:
@@ -89,17 +92,20 @@ or `vagrant provision` as appropiate.'''
     parser.add_argument('-v', '--version',
                         help='''The CKAN branch or tag to build, eg master, dev-v2.6, release-v2.5.3.
 If not provided you will be propmt for it''')
+    parser.add_argument('-p', '--pythonversion',
+                        help='''The Python version for this package eg py2, py3
+If not provided you will be propmt for it''')
     parser.add_argument('-i', '--iteration',
                         help='''The iteration number to add to the package name.
-If not provided you will be propmt for it''')
+If not provided you will be prompt for it''')
     parser.add_argument('-d', '--datapusher',
                         action='store_true',
                         default='y',
                         help='''Whether to add the DataPusher to the package,
 defaults to true''')
     parser.add_argument('-t', '--target',
-                        help='''The distribution to target (trusty or xenial or bionic).
-If omitted, both are built''')
+                        help='''The distribution to target (xenial or bionic or focal).
+If omitted, all are built''')
     parser.add_argument('-a', '--ansible-verbose',
                         default='vv',
                         help='Ansible verbosity level, defaults to "vv"')
@@ -119,20 +125,27 @@ If omitted, both are built''')
     args = parser.parse_args()
 
     version = _check_arg(args, 'version', 'CKAN Version (branch or tag)')
+    pythonversion = _check_arg(args, 'pythonversion', 'Python Version (py2 or py3)')
     iteration = _check_arg(args, 'iteration', 'Iteration')
     datapusher = args.datapusher
     target = args.target
 
-    if minor_version(version) > 8:
-        print('This version of the scripts can only package up to CKAN 2.8')
+    if minor_version(version) < 9:
+        print('This version of the scripts can only package CKAN 2.9 onwards')
         sys.exit(1)
 
-    if target and target not in ('trusty', 'xenial', 'bionic'):
+    if target and target not in ('xenial', 'bionic', 'focal'):
         print('Wrong target: ' + target)
         sys.exit(1)
+
+    if target and target in ('xenial', 'bionic'):
+        if pythonversion != "py2":
+            print('Target: ' + target + ' - Python version should be set to py2')
+            sys.exit(1)
+
     ansible_verbose = args.ansible_verbose
 
-    set_env_vars(version, iteration, datapusher, ansible_verbose)
+    set_env_vars(version, pythonversion, iteration, datapusher, ansible_verbose)
     try:
         run(target)
     finally:

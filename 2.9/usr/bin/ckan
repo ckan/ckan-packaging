@@ -1,0 +1,3 @@
+#!/bin/sh
+
+sudo -u www-data /usr/lib/ckan/default/bin/ckan -c /etc/ckan/default/ckan.ini "$@"

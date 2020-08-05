@@ -6,10 +6,6 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
-  config.vm.define "trusty" do |trusty|
-    trusty.vm.box = "ubuntu/trusty64"
-  end
-
   config.vm.define "xenial" do |xenial|
     xenial.vm.box = "ubuntu/xenial64"
   end
@@ -18,9 +14,16 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     bionic.vm.box = "ubuntu/bionic64"
   end
 
+  config.vm.define "focal" do |focal|
+    focal.vm.box = "ubuntu/focal64"
+  end
+
   config.ssh.forward_agent = true
   config.vm.provider "virtualbox" do |v|
     v.memory = 1024
+    v.customize ["modifyvm", :id, "--uart1", "0x3F8", "4"]
+    v.customize ["modifyvm", :id, "--uartmode1", "file", File::NULL]
+ 
   end
 
   config.vm.provision "ansible" do |ansible|
@@ -35,6 +38,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
      if ENV.has_key?("CKAN_PACKAGE_VERSION")
          ansible.extra_vars["version"] = ENV["CKAN_PACKAGE_VERSION"]
+     end
+     if ENV.has_key?("PYTHON_VERSION")
+         ansible.extra_vars["pythonversion"] = ENV["PYTHON_VERSION"]
      end
      if ENV.has_key?("CKAN_PACKAGE_ITERATION")
          ansible.extra_vars["iteration"] = ENV["CKAN_PACKAGE_ITERATION"]
