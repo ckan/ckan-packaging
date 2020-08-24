@@ -3,8 +3,8 @@ CKAN Packaging Scripts
 
 These scripts are used to build Debian packages (deb files) for CKAN releases.
 
-**Note:** This version of the scripts can only package up to and including CKAN 2.8.
-For more recent CKAN versions check the latest master branch.
+**Note:** This version of the scripts can only package CKAN 2.9 and higher.
+For previous CKAN versions use the `build-ckan-2.8` tag.
 
 
 Overview
