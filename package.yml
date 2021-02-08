@@ -58,9 +58,6 @@
   
     - name: get setuptools (II)
       action: command python /tmp/ez_setup.py
-  
-    - name: get pip (I)
-      action: get_url url=https://bootstrap.pypa.io/get-pip.py dest=/tmp
 
     # Install pip and virtualenv
     - name: Install apt Packages 

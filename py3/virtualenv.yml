@@ -1,7 +1,9 @@
 ---
+    - name: Get pip
+      action: get_url url=https://bootstrap.pypa.io/get-pip.py dest=/tmp
+
     - name: Install pip for Python3
       action: command python3 /tmp/get-pip.py
 
     - name: Install virtualenv for Python3
       action: command python3 -m venv /usr/lib/ckan/default
-      
