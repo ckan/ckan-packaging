@@ -63,10 +63,10 @@
       action: command python /tmp/ez_setup.py
 
     - name: get pip (I)
-      action: get_url url=https://bootstrap.pypa.io/get-pip.py dest=/tmp
+      action: get_url url=https://bootstrap.pypa.io/2.7/get-pip.py dest=/tmp
 
     - name: get pip (II)
-      action: command python /tmp/get-pip.py
+      action: command python /tmp/get-pip.py pip==20.3.3
 
     - name: install virtualenv
       pip:
