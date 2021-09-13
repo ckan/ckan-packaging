@@ -6,6 +6,7 @@
     name:
       - 'git-core'
       - 'python-dev'
+      - 'virtualenv'
       - 'postgresql'
       - 'libpq-dev'
       - 'libxml2-dev'
