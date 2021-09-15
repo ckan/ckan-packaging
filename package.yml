@@ -111,7 +111,7 @@
       register: ckan_version
 
     - name: pull datapusher version
-      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.15
+      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.16
       when: datapusher == 'y'
 
     - name: Recursively remove .git directory
