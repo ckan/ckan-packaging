@@ -12,11 +12,15 @@ Overview
 
 To create Debian packages of CKAN, install Vagrant and Ansible and run::
 
-    ./ckan-package -v dev-v2.9 -p py3 -i 1 -t focal
+    ./ckan-package -v dev-v2.10 -i 1 -t jammy
 
 If you omit the parameters you will be prompted for them.
 
-The following combinations of packages are valid::
+    CKAN 2.10   Python3     jammy, focal
+    CKAN 2.9    Python3     jammy, focal
+
+
+The following combinations of packages are no longer supported::
 
     CKAN 2.9    Python3, Python2    focal, bionic, xenial
     CKAN 2.8    Python2             focal, bionic, xenial
@@ -34,9 +38,8 @@ configured in a `multi-machine <https://docs.vagrantup.com/v2/multi-machine>`_ s
 
 Each machine is running one of the supported distributions that we target, currently:
 
-* Ubuntu 16.04 64bit (xenial)
-* Ubuntu 18.04 64bit (bionic)
 * Ubuntu 20.04 64bit (focal)
+* Ubuntu 22.04 64bit (jammy)
 
 We use `Ansible <http://ansible.com>`_ to provision the Vagrant machines, which
 results in the creation of the package. Ansible is configured via
