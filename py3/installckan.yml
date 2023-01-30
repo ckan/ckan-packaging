@@ -10,6 +10,7 @@
         name: setuptools==44.1.0
         virtualenv: /usr/lib/ckan/default
         virtualenv_command: pyvenv
+      when: ckanver[0] == "2.9"
     
     - name: run setup.py develop for Python3 ckan 
       action: command chdir=/usr/lib/ckan/default/src/ckan/ ../../bin/python3 setup.py develop
