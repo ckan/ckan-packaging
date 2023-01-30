@@ -10,7 +10,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     focal.vm.box = "ubuntu/focal64"
   end
 
-  config.vm.define "focal" do |focal|
+  config.vm.define "jammy" do |focal|
     focal.vm.box = "ubuntu/jammy64"
   end
 

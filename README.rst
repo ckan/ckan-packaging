@@ -92,12 +92,11 @@ full list of options and parameters::
 
 Most of the times you will want to run something like the following::
 
-    ./ckan-package -v dev-v2.8 -p py3 -i 1 -t focal
+    ./ckan-package -v dev-v2.10 -i 1 -t jammy
 
 Where:
 
- * -v (version) relates to the CKAN  branch or tag to build, eg master, dev-v2.6, release-v2.5.3
- * -p (python version) relates to the version of Python  eg py2, py3
+ * -v (version) relates to the CKAN  branch or tag to build, eg master, dev-v2.10, ckan-v2.9.8
  * -i (iteration) e.g. `beta1` for a beta or for a proper release use a number e.g. `1`
  * -t (target) will build just for that version of Ubuntu
 
