@@ -29,7 +29,7 @@
       action: apt pkg=nginx state=present update_cache=yes
 
     - name: install fpm
-      action: command gem install -v 1.11.0 fpm -- creates=/usr/local/bin/fpm
+      action: command gem install -v 1.15.0 fpm -- creates=/usr/local/bin/fpm
 
     - name: delete old directories
       action: file path={{ item }} state=absent
