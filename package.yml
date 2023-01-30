@@ -20,9 +20,9 @@
         register: ckanver
     - debug:
         var: ckanver[0]
-    
+
     # Install Ubuntu apt packages
-    - name: Install Ubuntu apt Packages 
+    - name: Install Ubuntu apt Packages
       include_tasks: "py3/apt.yml"
 
     - name: make sure nginx is installed
@@ -38,46 +38,40 @@
         - /usr/lib/ckan
         - /root/.cache/pip
 
-    - name: get setuptools (I)
-      action: get_url url=https://bootstrap.pypa.io/ez_setup.py dest=/tmp
-  
-    - name: get setuptools (II)
-      action: command python /tmp/ez_setup.py
-
     # Install pip and virtualenv
-    - name: Install apt Packages 
+    - name: Install apt Packages
       include_tasks: "py3/virtualenv.yml"
 
-    # Pull CKAN 
+    # Pull CKAN
     - name: pull ckan software
       action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version={{ version }}
 
-    # Clean up CKAN distro 
+    # Clean up CKAN distro
     - name: Recursively remove .git directory
       file:
         path: /usr/lib/ckan/default/src/ckan/.git
         state: absent
-    
+
     # Install ckan and dependancies
     - name: Install ckan and dependancies
       include_tasks: "py3/installckan.yml"
 
     # Install datapusher
-    - name: Install datapusher 
+    - name: Install datapusher
       include_tasks: "py3/datapusher.yml"
       when: datapusher == 'y'
 
-    # Clean up datapusher distro 
+    # Clean up datapusher distro
     - name: Recursively remove .git directory
       file:
         path: /usr/lib/ckan/datapusher/src/datapusher/.git
-        state: absent 
+        state: absent
       when: datapusher == 'y'
 
     # Install web files and dependancies
     - name: Install web and dependancies
       include_tasks: "common/web.yml"
-    
+
     # Copy other application files CKAN
     - name: Copy other application files for CKAN
       include_tasks: "common/app.yml"
