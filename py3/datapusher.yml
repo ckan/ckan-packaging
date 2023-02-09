@@ -33,6 +33,15 @@
           - datapusher_settings.py
           - datapusher-uwsgi.ini
 
+    - name: enable threads in DataPusher uwsgi conf
+      blockinfile:
+        path: /etc/ckan/datapusher/datapusher-uwsgi.ini
+        insertafter: "EOF"
+        block: |
+          workers = 2
+          threads = 2
+          lazy-apps = true
+
     - name: copy all common needed files for DataPusher
       action: copy src=common/{{ item }} dest=/{{ item }}
       with_items:
