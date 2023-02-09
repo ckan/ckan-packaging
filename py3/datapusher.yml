@@ -1,6 +1,6 @@
 ---
     - name: pull datapusher version
-      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.17
+      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.20
 
     - name: Install Python3 Virtual Environment for datapusher for Python 3
       action: command python3 -m venv /usr/lib/ckan/datapusher  
