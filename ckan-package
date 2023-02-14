@@ -7,59 +7,53 @@ import sys
 import argparse
 
 
-def set_env_vars(version, pythonversion, iteration, datapusher='y', ansible_verbose='vv'):
+def set_env_vars(version, iteration, datapusher="y", ansible_verbose="vv"):
 
-    os.environ['CKAN_PACKAGE_VERSION'] = version
-    os.environ['PYTHON_VERSION'] = pythonversion
-    os.environ['CKAN_PACKAGE_ITERATION'] = iteration
-    os.environ['CKAN_PACKAGE_DATAPUSHER'] = datapusher
-    os.environ['CKAN_PACKAGE_ANSIBLE_VERBOSE'] = ansible_verbose
+    os.environ["CKAN_PACKAGE_VERSION"] = version
+    os.environ["CKAN_PACKAGE_ITERATION"] = iteration
+    os.environ["CKAN_PACKAGE_DATAPUSHER"] = datapusher
+    os.environ["CKAN_PACKAGE_ANSIBLE_VERBOSE"] = ansible_verbose
 
 
 def clear_env_vars():
 
-    for key in ['CKAN_PACKAGE_VERSION',
-                'PYTHON_VERSION',
-                'CKAN_PACKAGE_ITERATION',
-                'CKAN_PACKAGE_DATAPUSHER',
-                'CKAN_PACKAGE_ANSIBLE_VERBOSE']:
+    for key in [
+        "CKAN_PACKAGE_VERSION",
+        "CKAN_PACKAGE_ITERATION",
+        "CKAN_PACKAGE_DATAPUSHER",
+        "CKAN_PACKAGE_ANSIBLE_VERBOSE",
+    ]:
         if key in os.environ:
             del os.environ[key]
 
 
 def get_status(out, target):
-    return re.search(target + '\s*(\w+)', out).group(1)
+    return re.search(target + "\s*(\w+)", out).group(1)
 
 
 def run(target=None):
 
-    status_xenial = None
-    status_bionic = None
+    status_jammy = None
     status_focal = None
 
-    print('Checking Vagrant machines status...')
-    out = subprocess.check_output(['vagrant', 'status']).decode('utf8')
+    print("Checking Vagrant machines status...")
+    out = subprocess.check_output(["vagrant", "status"]).decode("utf8")
 
-    if target is None or target == 'xenial':
-        status_xenial = get_status(out, 'xenial')
-        print('Machine "xenial" is ' + status_xenial)
-
-    if target is None or target == 'bionic':
-        status_bionic = get_status(out, 'bionic')
-        print('Machine "bionic" is ' + status_bionic)
-
-    if target is None or target == 'focal':
-        status_focal = get_status(out, 'focal')
+    if target is None or target == "focal":
+        status_focal = get_status(out, "focal")
         print('Machine "focal" is ' + status_focal)
+    if target is None or target == "jammy":
+        status_jammy = get_status(out, "jammy")
+        print('Machine "jammy" is ' + status_jammy)
 
-    if (status_xenial and status_xenial != 'running') or \
-            (status_bionic and status_bionic != 'running') or \
-                (status_focal and status_focal != 'running'):
-        print('Starting up machine(s)')
-        command = ['vagrant', 'up', '--provision']
+    if (status_jammy and status_jammy != "running") or (
+        status_focal and status_focal != "running"
+    ):
+        print("Starting up machine(s)")
+        command = ["vagrant", "up", "--provision"]
     else:
-        print('Machine(s) already started, provisioning')
-        command = ['vagrant', 'provision']
+        print("Machine(s) already started, provisioning")
+        command = ["vagrant", "provision"]
 
     if target:
         command.append(target)
@@ -68,10 +62,10 @@ def run(target=None):
 
 
 def minor_version(version_string):
-    pattern = r'\D+\D+(?P<capture>\d+\.\d+)'
+    pattern = r"\D+\D+(?P<capture>\d+\.\d+)"
     version_number = re.search(pattern, version_string)
     if version_number:
-        parts = version_number.groups(0)[0].split('.')
+        parts = version_number.groups(0)[0].split(".")
         try:
             if len(parts) == 3:
                 # ckan-2.8.5
@@ -81,71 +75,77 @@ def minor_version(version_string):
                 return int(parts[-1])
         except ValueError:
             pass
-    raise ValueError('Could not parse version number: %s' % version_string)
+    raise ValueError("Could not parse version number: %s" % version_string)
 
 
-if __name__ == '__main__':
-    description = '''Builds CKAN deb packages.
+if __name__ == "__main__":
+    description = """Builds CKAN deb packages.
 This script essentially sets up the necessary env vars and calls `vagrant up`
-or `vagrant provision` as appropiate.'''
+or `vagrant provision` as appropiate."""
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('-v', '--version',
-                        help='''The CKAN branch or tag to build, eg master, dev-v2.6, release-v2.5.3.
-If not provided you will be propmt for it''')
-    parser.add_argument('-p', '--pythonversion',
-                        help='''The Python version for this package eg py2, py3
-If not provided you will be propmt for it''')
-    parser.add_argument('-i', '--iteration',
-                        help='''The iteration number to add to the package name.
-If not provided you will be prompt for it''')
-    parser.add_argument('-d', '--datapusher',
-                        action='store_true',
-                        default='y',
-                        help='''Whether to add the DataPusher to the package,
-defaults to true''')
-    parser.add_argument('-t', '--target',
-                        help='''The distribution to target (xenial or bionic or focal).
-If omitted, all are built''')
-    parser.add_argument('-a', '--ansible-verbose',
-                        default='vv',
-                        help='Ansible verbosity level, defaults to "vv"')
+    parser.add_argument(
+        "-v",
+        "--version",
+        help="""The CKAN branch or tag to build, eg master, dev-v2.6, release-v2.5.3.
+If not provided you will be propmt for it""",
+    )
+    parser.add_argument(
+        "-i",
+        "--iteration",
+        help="""The iteration number to add to the package name.
+If not provided you will be prompt for it""",
+    )
+    parser.add_argument(
+        "-d",
+        "--datapusher",
+        action="store_true",
+        default="y",
+        help="""Whether to add the DataPusher to the package,
+defaults to true""",
+    )
+    parser.add_argument(
+        "-t",
+        "--target",
+        help="""The distribution to target (focal or jammy).
+If omitted, all are built""",
+    )
+    parser.add_argument(
+        "-a",
+        "--ansible-verbose",
+        default="vv",
+        help='Ansible verbosity level, defaults to "vv"',
+    )
 
     def _check_arg(args, var, prompt):
         if getattr(args, var):
             return getattr(args, var)
         try:
-            var = raw_input('{0}:'.format(prompt))
+            var = raw_input("{0}:".format(prompt))
         except NameError:
-            var = input('{0}:'.format(prompt))
+            var = input("{0}:".format(prompt))
         if not var:
-            print('Please provide a value for the {0}'.format(prompt))
+            print("Please provide a value for the {0}".format(prompt))
             sys.exit(1)
         return var
 
     args = parser.parse_args()
 
-    version = _check_arg(args, 'version', 'CKAN Version (branch or tag)')
-    pythonversion = _check_arg(args, 'pythonversion', 'Python Version (py2 or py3)')
-    iteration = _check_arg(args, 'iteration', 'Iteration')
+    version = _check_arg(args, "version", "CKAN Version (branch or tag)")
+    iteration = _check_arg(args, "iteration", "Iteration")
     datapusher = args.datapusher
     target = args.target
 
     if minor_version(version) < 9:
-        print('This version of the scripts can only package CKAN 2.9 onwards')
+        print("This version of the scripts can only package CKAN 2.9 onwards")
         sys.exit(1)
 
-    if target and target not in ('xenial', 'bionic', 'focal'):
-        print('Wrong target: ' + target)
+    if target and target not in ("focal", "jammy"):
+        print("Wrong target: " + target)
         sys.exit(1)
-
-    if target and target in ('xenial', 'bionic'):
-        if pythonversion != "py2":
-            print('Target: ' + target + ' - Python version should be set to py2')
-            sys.exit(1)
 
     ansible_verbose = args.ansible_verbose
 
-    set_env_vars(version, pythonversion, iteration, datapusher, ansible_verbose)
+    set_env_vars(version, iteration, datapusher, ansible_verbose)
     try:
         run(target)
     finally:

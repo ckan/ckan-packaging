@@ -4,9 +4,6 @@
    - name: version
      prompt: "CKAN Version (branch or tag)"
      private: True
-   - name: pythonversion
-     prompt: "Python Version (py2 or py3)"
-     private: True
    - name: iteration
      prompt: "Iteration"
      private: True
@@ -23,28 +20,16 @@
         register: ckanver
     - debug:
         var: ckanver[0]
-    
+
     # Install Ubuntu apt packages
-    - name: Install Ubuntu apt Packages 
-      include_tasks: "{{ pythonversion }}/apt.yml"
-
-    - debug:
-        var: pythonversion
-
-    - name: Check if apache service exists
-      stat: path=/etc/init.d/apache2
-      register: apache_status
-  
-    - name: Stop apache if it's running
-      service: name=apache2 state=stopped
-      when: apache_status.stat.exists
-      register: apache_stopped
+    - name: Install Ubuntu apt Packages
+      include_tasks: "py3/apt.yml"
 
     - name: make sure nginx is installed
       action: apt pkg=nginx state=present update_cache=yes
 
     - name: install fpm
-      action: command gem install -v 1.11.0 fpm -- creates=/usr/local/bin/fpm
+      action: command gem install -v 1.15.0 fpm -- creates=/usr/local/bin/fpm
 
     - name: delete old directories
       action: file path={{ item }} state=absent
@@ -53,59 +38,48 @@
         - /usr/lib/ckan
         - /root/.cache/pip
 
-    - name: get setuptools (I)
-      action: get_url url=https://bootstrap.pypa.io/ez_setup.py dest=/tmp
-  
-    - name: get setuptools (II)
-      action: command python /tmp/ez_setup.py
-
     # Install pip and virtualenv
-    - name: Install apt Packages 
-      include_tasks: "{{ pythonversion }}/virtualenv.yml"
+    - name: Install apt Packages
+      include_tasks: "py3/virtualenv.yml"
 
-    # Pull CKAN 
+    # Pull CKAN
     - name: pull ckan software
       action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version={{ version }}
 
-    # Clean up CKAN distro 
+    # Clean up CKAN distro
     - name: Recursively remove .git directory
       file:
         path: /usr/lib/ckan/default/src/ckan/.git
         state: absent
-    
-    # Check requirements
-    - name: check requirements file name
-      shell: "[ -f /usr/lib/ckan/default/src/ckan/pip-requirements.txt ] && echo 'pip-requirements.txt' || echo 'requirements.txt'"
-      register: requirements_file_name
 
     # Install ckan and dependancies
     - name: Install ckan and dependancies
-      include_tasks: "{{ pythonversion }}/installckan.yml"
+      include_tasks: "py3/installckan.yml"
 
     # Install datapusher
-    - name: Install datapusher 
-      include_tasks: "{{ pythonversion }}/datapusher.yml"
+    - name: Install datapusher
+      include_tasks: "py3/datapusher.yml"
       when: datapusher == 'y'
 
-    # Clean up datapusher distro 
+    # Clean up datapusher distro
     - name: Recursively remove .git directory
       file:
         path: /usr/lib/ckan/datapusher/src/datapusher/.git
-        state: absent 
+        state: absent
       when: datapusher == 'y'
 
     # Install web files and dependancies
     - name: Install web and dependancies
-      include_tasks: "{{ ckanver[0] }}/web.yml"
-    
+      include_tasks: "common/web.yml"
+
     # Copy other application files CKAN
     - name: Copy other application files for CKAN
-      include_tasks: "{{ ckanver[0] }}/app.yml"
+      include_tasks: "common/app.yml"
 
     # template the after web script
     - name: template the after web script
-      action: template src={{ ckanver[0] }}/after_web.j2 dest=/tmp/after_web.sh mode=744
+      action: template src=common/after_web.j2 dest=/tmp/after_web.sh mode=744
 
     # Build deb package for CKAN
     - name: Build deb package for CKAN
-      include_tasks: "{{ ckanver[0] }}/build.yml"
+      include_tasks: "common/build.yml"

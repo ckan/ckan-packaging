@@ -12,11 +12,15 @@ Overview
 
 To create Debian packages of CKAN, install Vagrant and Ansible and run::
 
-    ./ckan-package -v dev-v2.9 -p py3 -i 1 -t focal
+    ./ckan-package -v dev-v2.10 -i 1 -t jammy
 
 If you omit the parameters you will be prompted for them.
 
-The following combinations of packages are valid::
+    CKAN 2.10   Python3     jammy, focal
+    CKAN 2.9    Python3     jammy, focal
+
+
+The following combinations of packages are no longer supported::
 
     CKAN 2.9    Python3, Python2    focal, bionic, xenial
     CKAN 2.8    Python2             focal, bionic, xenial
@@ -34,9 +38,8 @@ configured in a `multi-machine <https://docs.vagrantup.com/v2/multi-machine>`_ s
 
 Each machine is running one of the supported distributions that we target, currently:
 
-* Ubuntu 16.04 64bit (xenial)
-* Ubuntu 18.04 64bit (bionic)
 * Ubuntu 20.04 64bit (focal)
+* Ubuntu 22.04 64bit (jammy)
 
 We use `Ansible <http://ansible.com>`_ to provision the Vagrant machines, which
 results in the creation of the package. Ansible is configured via
@@ -89,12 +92,11 @@ full list of options and parameters::
 
 Most of the times you will want to run something like the following::
 
-    ./ckan-package -v dev-v2.8 -p py3 -i 1 -t focal
+    ./ckan-package -v dev-v2.10 -i 1 -t jammy
 
 Where:
 
- * -v (version) relates to the CKAN  branch or tag to build, eg master, dev-v2.6, release-v2.5.3
- * -p (python version) relates to the version of Python  eg py2, py3
+ * -v (version) relates to the CKAN  branch or tag to build, eg master, dev-v2.10, ckan-v2.9.8
  * -i (iteration) e.g. `beta1` for a beta or for a proper release use a number e.g. `1`
  * -t (target) will build just for that version of Ubuntu
 
