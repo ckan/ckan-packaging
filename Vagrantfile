@@ -26,6 +26,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
      ansible.playbook = "package.yml"
      ansible.host_key_checking = false
      ansible.become = true
+     ansible.compatibility_mode = "2.0"
 
      ansible.verbose = ENV.fetch("CKAN_PACKAGE_ANSIBLE_VERBOSE", "vv")
      ansible.extra_vars = {}
