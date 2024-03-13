@@ -28,6 +28,10 @@
     - name: make sure nginx is installed
       action: apt pkg=nginx state=present update_cache=yes
 
+    - name: install fpm requirements
+      action: command gem install dotenv -v 2.8.1
+      when: ansible_distribution_version == "20.04"
+
     - name: install fpm
       action: command gem install -v 1.15.0 fpm -- creates=/usr/local/bin/fpm
 
