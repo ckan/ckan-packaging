@@ -35,6 +35,7 @@ def run(target=None):
 
     status_jammy = None
     status_focal = None
+    status_noble = None
 
     print("Checking Vagrant machines status...")
     out = subprocess.check_output(["vagrant", "status"]).decode("utf8")
@@ -45,9 +46,13 @@ def run(target=None):
     if target is None or target == "jammy":
         status_jammy = get_status(out, "jammy")
         print('Machine "jammy" is ' + status_jammy)
+    if target is None or target == "noble":
+        status_noble = get_status(out, "noble")
+        print('Machine "noble" is ' + status_noble)
 
     if (status_jammy and status_jammy != "running") or (
-        status_focal and status_focal != "running"
+        status_focal and status_focal != "running") or (
+        status_noble and status_noble != "running"
     ):
         print("Starting up machine(s)")
         command = ["vagrant", "up", "--provision"]
