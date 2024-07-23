@@ -14,6 +14,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     focal.vm.box = "ubuntu/jammy64"
   end
 
+  config.vm.define "noble" do |focal|
+    focal.vm.box = "ubuntu/noble64"
+  end
+
   config.ssh.forward_agent = true
   config.vm.provider "virtualbox" do |v|
     v.memory = 1024

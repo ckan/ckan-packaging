@@ -1,0 +1,12 @@
+Build debian packages:
+2.10 - focal
+2.10 - jammy
+2.11 - jammy
+2.11 - noble
+
+20.04 = Focal
+22.04 = Jammy
+24.04 = Noble 
+
+1. Update Vagrantfile
+2. Update ckan-package
