@@ -8,22 +8,45 @@ ARG DATAPUSHER_VERSION=0.0.21
 ARG DISTRIBUTION=jammy
 ARG ITERATION
 
-# Install Ubuntu packages
-RUN apt-get update -q && \
-    apt-get upgrade -y -q && \
-    DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y -q install \
-        git \
-        python3-dev \
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
+
+# Update package lists and install dependencies conditionally
+RUN apt-get update && apt-get install -y software-properties-common
+
+RUN if [ "$UBUNTU_VERSION" = "24.04" ]; then \
+        add-apt-repository ppa:deadsnakes/ppa && \
+        apt-get update && \
+        apt-get install -y \
+        python3.11-dev \
         python3-pip \
-        python3-venv \
+        python3.11-venv \
+        git \
         libpq-dev \
         libxml2-dev \
         libxslt1-dev \
         build-essential \
         rubygems-integration \
         ruby-dev \
-        nginx
-
+        nginx; \
+    else \
+        apt-get update -q && \
+        apt-get upgrade -y -q && \
+        apt-get install -y \
+        python3-dev \
+        python3-pip \
+        python3-venv \
+        git \
+        libpq-dev \
+        libxml2-dev \
+        libxslt1-dev \
+        build-essential \
+        rubygems-integration \
+        ruby-dev \
+        nginx; \
+    fi
+      
 # Install FPM
 RUN if [ "$UBUNTU_VERSION" = "20.04" ] ; then gem install dotenv -v 2.8.1 ; fi && \
     gem install fpm -- creates=/usr/local/bin/fpm
@@ -35,8 +58,10 @@ RUN mkdir -p /etc/ckan/default && \
     mkdir /output
 
 
-# Create venv
-RUN python3 -m venv /usr/lib/ckan/default
+# Create venv for CKAN
+RUN if [ "$UBUNTU_VERSION" = "24.04" ]; then \
+        python3.11 -m venv /usr/lib/ckan/default; else \
+        python3 -m venv /usr/lib/ckan/default; fi
 
 # Pull CKAN source
 RUN git clone --depth=1 --branch=${CKAN_VERSION} https://github.com/ckan/ckan /usr/lib/ckan/default/src/ckan && \
@@ -51,13 +76,17 @@ RUN /usr/lib/ckan/default/bin/pip install -U pip && \
 RUN cp /usr/lib/ckan/default/src/ckan/wsgi.py /etc/ckan/default/wsgi.py && \
     cp /usr/lib/ckan/default/src/ckan/ckan-uwsgi.ini /etc/ckan/default/ckan-uwsgi.ini
 
+# Create venv for DataPusher
+RUN if [ "$UBUNTU_VERSION" = "24.04" ]; then \
+        python3.11 -m venv /usr/lib/ckan/datapusher; else \
+        python3 -m venv /usr/lib/ckan/datapusher; fi
+
 # Install DataPusher
-RUN python3 -m venv /usr/lib/ckan/datapusher && \
-    # Clone source
-    git clone --depth=1 --branch=${DATAPUSHER_VERSION} https://github.com/ckan/datapusher /usr/lib/ckan/datapusher/src/datapusher && \
+RUN git clone --depth=1 --branch=${DATAPUSHER_VERSION} https://github.com/ckan/datapusher /usr/lib/ckan/datapusher/src/datapusher && \
     rm -rf /usr/lib/ckan/datapusher/src/datapusher/.git/ && \
     # Install requirements and datapusher
     /usr/lib/ckan/datapusher/bin/pip install -U pip && \
+    #/usr/lib/ckan/datapusher/bin/pip install setuptools==71.1.0 && \
     /usr/lib/ckan/datapusher/bin/pip install -r /usr/lib/ckan/datapusher/src/datapusher/requirements.txt uwsgi && \
     /usr/lib/ckan/datapusher/bin/pip install /usr/lib/ckan/datapusher/src/datapusher
 
