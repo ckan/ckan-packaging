@@ -1,0 +1,10 @@
+name: Build CKAN 2.10 on Ubuntu 20.04 (focal)
+
+on: push
+
+jobs:
+  call-reusable-workflow:
+    uses: ./.github/workflows/reusable-build-deb-package.yml
+    with:
+      ckan-ref: "dev-v2.10"
+      ubuntu-version: "20.04"

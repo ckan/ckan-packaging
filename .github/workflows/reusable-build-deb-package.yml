@@ -1,0 +1,44 @@
+name: Reusable CKAN deb packages build workflow
+
+on:
+  workflow_call:
+    inputs:
+      ckan-ref:
+        required: true
+        type: string
+      ubuntu-version:
+        required: true
+        type: string
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build package
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          outputs: "type=local,dest=/tmp"
+          build-args: |
+            CKAN_REF=${{ inputs.ckan-ref }}
+            UBUNTU_VERSION=${{ inputs.ubuntu-version }}
+
+      - name: Rename file
+        # To remove patch version .e.g python-ckan_2.11.1b0-jammy1_amd64.deb -> python-ckan_2.11-jammy1_amd64.deb
+        run: |
+          for f in /tmp/python-ckan_*; do mv "$f" "$(echo "$f" | sed 's/\([0-9]\+\.[0-9]\+\)[^-]*-/\1-/')"; done
+          OUTPUT_FILE=$(basename /tmp/python-ckan*)
+          echo "OUTPUT_FILE=$OUTPUT_FILE" >> $GITHUB_ENV
+          echo "Generated file: $OUTPUT_FILE"
+
+      - name: Upload deb file
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.OUTPUT_FILE }}
+          path: /tmp/${{ env.OUTPUT_FILE }}
