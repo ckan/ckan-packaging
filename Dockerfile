@@ -2,16 +2,15 @@ ARG UBUNTU_VERSION=22.04
 FROM ubuntu:${UBUNTU_VERSION} AS builder
 
 ARG UBUNTU_VERSION=${UBUNTU_VERSION}
-ARG CKAN_VERSION=2.11
-ARG CKAN_BRANCH=dev-v2.11
+ARG CKAN_REF=dev-v2.11
 ARG DATAPUSHER_VERSION=0.0.21
-ARG DISTRIBUTION=jammy
 ARG ITERATION
 
 # Install Ubuntu packages
 RUN apt-get update -q && \
     apt-get upgrade -y -q && \
     DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y -q install \
+        lsb-release \
         git \
         python3-dev \
         python3-pip \
@@ -34,12 +33,11 @@ RUN mkdir -p /etc/ckan/default && \
     mkdir -p /etc/supervisor/conf.d && \
     mkdir /output
 
-
 # Create venv
 RUN python3 -m venv /usr/lib/ckan/default
 
 # Pull CKAN source
-RUN git clone --depth=1 --branch=${CKAN_VERSION} https://github.com/ckan/ckan /usr/lib/ckan/default/src/ckan && \
+RUN git clone --depth=1 --branch=${CKAN_REF} https://github.com/ckan/ckan /usr/lib/ckan/default/src/ckan && \
     rm -rf /usr/lib/ckan/default/src/ckan/.git/
 
 # Install CKAN and its requirements
@@ -79,8 +77,10 @@ COPY common/etc/supervisor/conf.d/ckan-datapusher.conf /etc/supervisor/conf.d/
 COPY --chmod=744 common/usr/bin/ckan /usr/bin/ckan
 COPY --chmod=744 common/after_web.sh /tmp/after_web.sh
 
-# Create the deb package
-RUN fpm \
+# Get the actual CKAN version and create the deb package
+RUN DISTRIBUTION=$(lsb_release -c -s) && \
+    CKAN_VERSION=$(/usr/lib/ckan/default/bin/python3 -c "import ckan; print(ckan.__version__)") && \
+    fpm \
     -t deb -s dir \
     --package /output \
     --name python-ckan \
@@ -90,8 +90,8 @@ RUN fpm \
     --vendor='CKAN Association' \
     --url='https://ckan.org' \
     --after-install=/tmp/after_web.sh \
-    --iteration "${DISTRIBUTION}""${ITERATION}" \
-    --version "${CKAN_VERSION}" \
+    --iteration "$DISTRIBUTION""${ITERATION}" \
+    --version "$CKAN_VERSION" \
     --depends nginx \
     --depends libpq5 \
     --config-files /etc/nginx/sites-available/ckan \
