@@ -24,7 +24,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: false
-          outputs: "type=local,dest=/tmp"
+          outputs: "type=local,dest=."
           build-args: |
             CKAN_REF=${{ inputs.ckan-ref }}
             UBUNTU_VERSION=${{ inputs.ubuntu-version }}
@@ -32,8 +32,8 @@ jobs:
       - name: Rename file
         # To remove patch version .e.g python-ckan_2.11.1b0-jammy1_amd64.deb -> python-ckan_2.11-jammy1_amd64.deb
         run: |
-          for f in /tmp/python-ckan_*; do mv "$f" "$(echo "$f" | sed 's/\([0-9]\+\.[0-9]\+\)[^-]*-/\1-/')"; done
-          OUTPUT_FILE=$(basename /tmp/python-ckan*)
+          for f in python-ckan_*; do mv "$f" "$(echo "$f" | sed 's/\([0-9]\+\.[0-9]\+\)[^-]*-/\1-/')"; done
+          OUTPUT_FILE=$(basename python-ckan*)
           echo "OUTPUT_FILE=$OUTPUT_FILE" >> $GITHUB_ENV
           echo "Generated file: $OUTPUT_FILE"
 
@@ -41,4 +41,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.OUTPUT_FILE }}
-          path: /tmp/${{ env.OUTPUT_FILE }}
+          path: ${{ env.OUTPUT_FILE }}
