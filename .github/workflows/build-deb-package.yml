@@ -1,5 +1,7 @@
 name: CKAN deb packages build workflow
 
+on: push
+
 jobs:
   get-build-versions:
     runs-on: ubuntu-latest
