@@ -26,7 +26,7 @@ jobs:
       matrix:
         build: ${{ fromJson(needs.get-build-versions.outputs.versions) }}
 
-    name: CKAN ref ${{ matrix.build.ckan-ref }} on Ubuntu ${{ matrix.build.ubuntu-version }}
+    name: CKAN ref ${{ matrix.build.ckan_ref }} on Ubuntu ${{ matrix.build.ubuntu_version }}
 
     steps:
       - name: Checkout
@@ -41,8 +41,8 @@ jobs:
           push: false
           outputs: "type=local,dest=."
           build-args: |
-            CKAN_REF=${{ matrix.build.ckan-ref }}
-            UBUNTU_VERSION=${{ matrix.build.ubuntu-version }}
+            CKAN_REF=${{ matrix.build.ckan_ref }}
+            UBUNTU_VERSION=${{ matrix.build.ubuntu_version }}
 
       - name: Rename file
         # To remove patch version .e.g python-ckan_2.11.1b0-jammy_amd64.deb -> python-ckan_2.11-jammy_amd64.deb
