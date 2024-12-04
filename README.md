@@ -20,7 +20,7 @@ Builds CKAN deb packages. This script essentially sets up the necessary vars and
 
 positional arguments:
   ref                   The CKAN branch or tag to build (e.g. master, dev-v2.11, ckan-2.10.6...)
-  target                The Ubuntu distribution to target (e.g. focal, jammy, noble...)
+  target                The Ubuntu version to target (e.g. 20.04, 22.04, 24.04...)
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -30,9 +30,9 @@ optional arguments:
 
 For instance:
 
-	./ckan-package ckan-2.11.1 noble
-	./ckan-package dev-v2.11 jammy
-	./ckan-package master noble
+	./ckan-package ckan-2.11.1 24.04
+	./ckan-package dev-v2.11 22.04
+	./ckan-package master 24.04
 
 The currently supported packages are:
 
