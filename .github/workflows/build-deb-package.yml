@@ -14,7 +14,8 @@ jobs:
       - name: Get versions to build from VERSIONS file
         id: get-versions
         run: |
-          VERSIONS=$(cat "VERSIONS.json")
+          # Remove whitespace and line breaks
+          VERSIONS=$(cat "VERSIONS.json" | tr -d '[:space:]\n')
           echo "versions=$VERSIONS" >> $GITHUB_OUTPUT
 
   build:
