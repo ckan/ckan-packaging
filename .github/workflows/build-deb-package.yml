@@ -65,11 +65,30 @@ jobs:
   upload-to-s3:
     needs: build
     runs-on: ubuntu-latest
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.AWS_REGION }}
     steps:
     - uses: actions/download-artifact@v4
       with:
         pattern: python-ckan*
         merge-multiple: true
-    - name: Display structure of downloaded files
-      run: ls -R    
+    - name: Generate hash and upload
+      run: |
+        # Download current md5sum file
+        aws s3 cp s3://${{ secrets.AWS_BUCKET }}/md5sum .
 
+        for file in python-ckan*; do
+            # Remove current md5sum entry
+            sed -i "/$file/d" md5sum
+
+            # Add updated entry to md5sum file
+            md5sum $file >> md5sum
+
+            # Upload deb file
+            aws s3 cp $file s3://${{ secrets.AWS_BUCKET }}/staging/$file
+        done
+
+        # Upload updated md5sum file
+        aws s3 cp md5sum s3://${{ secrets.AWS_BUCKET }}/staging/md5sum
