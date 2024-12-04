@@ -24,7 +24,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build: ${{ fromJson(needs.get-versions.outputs.versions) }}
+        build: ${{ fromJson(needs.get-build-versions.outputs.versions) }}
 
     name: CKAN ref ${{ matrix.build.ckan-ref }} on Ubuntu ${{ matrix.build.ubuntu-version }}
 
