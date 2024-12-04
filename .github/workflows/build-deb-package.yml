@@ -68,7 +68,7 @@ jobs:
     steps:
     - uses: actions/download-artifact@v4
       with:
-        name: python-ckan*
+        merge-multiple: true
     - name: Display structure of downloaded files
       run: ls -R    
 
