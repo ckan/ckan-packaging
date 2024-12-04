@@ -10,6 +10,7 @@ jobs:
     uses: ./.github/workflows/build-deb-package.yml
 
   upload-to-s3:
+	name: Upload to S3
     needs: call-build-workflow
     runs-on: ubuntu-latest
     env:
@@ -41,6 +42,7 @@ jobs:
         aws s3 cp md5sum s3://${{ secrets.AWS_BUCKET }}/staging/md5sum
 
   upload-to-release:
+	name: Create GitHub release
     needs: call-build-workflow
     runs-on: ubuntu-latest
     steps:
@@ -49,5 +51,7 @@ jobs:
         pattern: python-ckan*
         merge-multiple: true
     - name: Create release and upload the deb files
+      env:
+        GH_TOKEN: ${{ github.token }}
       run: |
         gh release create ${{ github.ref_name }} ./python-ckan* --verify-tag
