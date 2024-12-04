@@ -1,0 +1,56 @@
+name: CKAN deb packages build workflow
+
+jobs:
+  get-build-versions:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.get-versions.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Get versions to build from VERSIONS file
+        id: get-versions
+        run: |
+          VERSIONS=$(cat "VERSIONS.json")
+          echo "matrix=$VERSIONS" >> $GITHUB_OUTPUT
+
+  build:
+    needs: get-build-versions
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        build: ${{ fromJson(needs.get-versions.outputs.matrix }}
+
+    name: CKAN ref ${{ matrix.build.ckan-ref }} on Ubuntu ${{ matrix.build.ubuntu-version }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build package
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          outputs: "type=local,dest=."
+          build-args: |
+            CKAN_REF=${{ matrix.build.ckan-ref }}
+            UBUNTU_VERSION=${{ matrix.build.ubuntu-version }}
+
+      - name: Rename file
+        # To remove patch version .e.g python-ckan_2.11.1b0-jammy_amd64.deb -> python-ckan_2.11-jammy_amd64.deb
+        run: |
+          for f in python-ckan_*; do mv "$f" "$(echo "$f" | sed 's/\([0-9]\+\.[0-9]\+\)[^-]*-/\1-/')"; done
+          OUTPUT_FILE=$(basename python-ckan*)
+          echo "OUTPUT_FILE=$OUTPUT_FILE" >> $GITHUB_ENV
+          echo "Generated file: $OUTPUT_FILE"
+
+      - name: Upload deb file
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.OUTPUT_FILE }}
+          path: ${{ env.OUTPUT_FILE }}
