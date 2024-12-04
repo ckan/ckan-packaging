@@ -6,7 +6,7 @@ jobs:
   get-build-versions:
     runs-on: ubuntu-latest
     outputs:
-      matrix: ${{ steps.get-versions.outputs.matrix }}
+      versions: ${{ steps.get-versions.outputs.versions }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -15,7 +15,7 @@ jobs:
         id: get-versions
         run: |
           VERSIONS=$(cat "VERSIONS.json")
-          echo "matrix=$VERSIONS" >> $GITHUB_OUTPUT
+          echo "versions=$VERSIONS" >> $GITHUB_OUTPUT
 
   build:
     needs: get-build-versions
@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build: ${{ fromJson(needs.get-versions.outputs.matrix }}
+        build: ${{ fromJson(needs.get-versions.outputs.versions }}
 
     name: CKAN ref ${{ matrix.build.ckan-ref }} on Ubuntu ${{ matrix.build.ubuntu-version }}
 
