@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 import argparse
+import json
 import subprocess
 import sys
-
 
 if __name__ == "__main__":
     description = """Builds CKAN deb packages.
@@ -14,7 +14,7 @@ This script essentially sets up the necessary vars and calls `docker buildx buil
         help="The CKAN branch or tag to build (e.g. master, dev-v2.11, ckan-2.10.6...)",
     )
     parser.add_argument(
-        "target", help="The Ubuntu distribution to target (e.g. focal, jammy, noble...)"
+        "target", help="The Ubuntu distribution to target (e.g. 20.04, 22.04, 24.04...)"
     )
     parser.add_argument(
         "-i",
@@ -29,13 +29,10 @@ This script essentially sets up the necessary vars and calls `docker buildx buil
     target = args.target
     iteration = args.iteration
 
-    supported_targets = {}
-    with open("UBUNTU_VERSIONS.txt") as f:
-        for line in f.readlines():
-            [version, name] = line.split()
-            supported_targets[name] = version
+    with open("VERSIONS.json") as f:
+        supported_versions = json.load(f)
 
-    if target not in supported_targets.keys():
+    if target not in [v["ubuntu_version"] for v in supported_versions]:
         print(f"Wrong target: {target}")
         sys.exit(1)
 
@@ -50,7 +47,7 @@ This script essentially sets up the necessary vars and calls `docker buildx buil
         "--build-arg",
         f"ITERATION={iteration}",
         "--build-arg",
-        f"UBUNTU_VERSION={supported_targets[target]}",
+        f"UBUNTU_VERSION={target}",
         ".",
     ]
 

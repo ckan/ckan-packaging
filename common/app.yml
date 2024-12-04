@@ -1,8 +1,0 @@
----
-    - name: copy source who.ini to configuration folder 
-      action: command cp /usr/lib/ckan/default/src/ckan/who.ini /etc/ckan/default/who.ini
-
-    - name: copy executables 
-      action: copy src=common/{{ item }} dest=/{{ item }} mode=744
-      with_items:
-        - usr/bin/ckan
