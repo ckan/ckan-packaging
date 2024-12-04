@@ -1,6 +1,9 @@
 name: CKAN deb packages build workflow
 
-on: push
+on:
+  push:
+    paths-ignore:
+      - 'README.md'
 
 jobs:
   get-build-versions:
