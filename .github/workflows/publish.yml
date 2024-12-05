@@ -56,15 +56,15 @@ jobs:
       run: |
         VERSIONS=$(cat "VERSIONS.json")
 
-        TABLE=$(echo "| Ubuntu Version | CKAN Ref |\n|---|---|\n" && echo $VERSIONS | jq -r '
-          (.[] | ["| \(.ubuntu_version) | \(.ckan_ref) |\n"]) |
+        LIST=$(echo $VERSIONS | jq -r '
+        (.[] | ["* \(.ckan_ref) on Ubuntu \(.ubuntu_version)"]) |
           .[]
-            ')
+        ')
 
-        NOTES="This release includes deb packages for the following versions.\n
+        NOTES="This release includes deb packages for the following versions.
           Please check the relevant file in the Assets section below.
 
-          $TABLE
+          $LIST
 
           Packages are also available at https://packaging.ckan.org."
 
