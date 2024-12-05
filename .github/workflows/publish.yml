@@ -46,7 +46,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-  
     - uses: actions/download-artifact@v4
       with:
         pattern: python-ckan*
@@ -55,4 +54,18 @@ jobs:
       env:
         GH_TOKEN: ${{ github.token }}
       run: |
-        gh release create ${{ github.ref_name }} ./python-ckan* --verify-tag
+        VERSIONS=$(cat "VERSIONS.json")
+
+        TABLE=$(echo "| Ubuntu Version | CKAN Ref |\n|---|---|\n" && echo $VERSIONS | jq -r '
+          (.[] | ["| \(.ubuntu_version) | \(.ckan_ref) |\n"]) |
+          .[]
+            ')
+
+        NOTES="This release includes deb packages for the following versions.\n
+          Please check the relevant file in the Assets section below.
+
+          $TABLE
+
+          Packages are also available at [https://packaging.ckan.org](https://packaging.ckan.org)."
+
+        gh release create ${{ github.ref_name }} ./python-ckan* --verify-tag --notes $NOTES
