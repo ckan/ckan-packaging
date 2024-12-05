@@ -63,10 +63,10 @@ docker buildx build \
 
 There are two separate workflows:
 
-* One builds the deb packages (based on the versions supplied in `VERSIONS.json`) and stores them as artifacfts in the workflow run page. This is triggered on every push.
+* `build.yml` builds the deb packages (based on the versions supplied in `VERSIONS.json`) and stores them as artifacfts in the workflow run page. This is triggered on every push.
 
 
-* Additionally, when a tag is pushed, another workflow also builds the packages and:
+* Additionally, when a tag is pushed, `publish.yml` also builds the packages and:
    1. Uploads them to the S3 bucket powering https://packaging.ckan.org
    2. Creates a new GitHub release with the packages attached as assets.
 
