@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-build-workflow:
-    uses: ./.github/workflows/build-deb-package.yml
+    uses: ./.github/workflows/reusable-build-package.yml
 
   upload-to-s3:
     needs: call-build-workflow

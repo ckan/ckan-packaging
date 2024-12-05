@@ -1,10 +1,7 @@
-name: CKAN deb packages build workflow
+name: Reusable CKAN deb packages build workflow
 
 on:
   workflow_call:
-  push:
-    paths-ignore:
-      - 'README.md'
 
 jobs:
   get-build-versions:
@@ -22,7 +19,7 @@ jobs:
           VERSIONS=$(cat "VERSIONS.json" | tr -d '[:space:]\n')
           echo "versions=$VERSIONS" >> $GITHUB_OUTPUT
 
-  build:
+  build-package:
     needs: get-build-versions
     runs-on: ubuntu-latest
     strategy:
