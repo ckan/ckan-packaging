@@ -68,4 +68,4 @@ jobs:
 
           Packages are also available at https://packaging.ckan.org."
 
-        gh release create ${{ github.ref_name }} ./python-ckan* --verify-tag --notes $NOTES
+        gh release create ${{ github.ref_name }} ./python-ckan* --verify-tag --notes "$NOTES"
