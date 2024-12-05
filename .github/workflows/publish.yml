@@ -66,6 +66,6 @@ jobs:
 
           $TABLE
 
-          Packages are also available at [https://packaging.ckan.org](https://packaging.ckan.org)."
+          Packages are also available at https://packaging.ckan.org."
 
         gh release create ${{ github.ref_name }} ./python-ckan* --verify-tag --notes $NOTES
