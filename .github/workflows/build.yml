@@ -6,5 +6,7 @@ on:
       - v*
 
 jobs:
-  call-build-workflow:
-    uses: ./.github/workflows/reusable-build-package.yml
+
+  test:
+    steps:
+      - run: echo "hola" 
