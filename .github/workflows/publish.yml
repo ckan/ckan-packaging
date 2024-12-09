@@ -3,7 +3,7 @@ name: CKAN deb packages publish workflow
 on:
   push:
     tags:
-      - 'v*'
+      - v*
 
 jobs:
   call-build-workflow:
