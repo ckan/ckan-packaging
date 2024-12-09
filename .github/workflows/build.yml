@@ -2,8 +2,8 @@ name: CKAN deb packages build workflow
 
 on:  
   push:
-    branch:
-      - '*'
+    branches:
+      - '**'
     tags-ignore:
       - v*
 
