@@ -1,9 +1,7 @@
-name: CKAN deb packages build workflow
+name: Reusable CKAN deb packages build workflow
 
 on:
-  push:
-    paths-ignore:
-      - 'README.md'
+  workflow_call:
 
 jobs:
   get-build-versions:
@@ -21,7 +19,7 @@ jobs:
           VERSIONS=$(cat "VERSIONS.json" | tr -d '[:space:]\n')
           echo "versions=$VERSIONS" >> $GITHUB_OUTPUT
 
-  build:
+  build-package:
     needs: get-build-versions
     runs-on: ubuntu-latest
     strategy:
@@ -54,6 +52,7 @@ jobs:
           OUTPUT_FILE=$(basename python-ckan*)
           echo "OUTPUT_FILE=$OUTPUT_FILE" >> $GITHUB_ENV
           echo "Generated file: $OUTPUT_FILE"
+          dpkg --info $OUTPUT_FILE
 
       - name: Upload deb file
         uses: actions/upload-artifact@v4

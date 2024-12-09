@@ -58,3 +58,20 @@ docker buildx build \
 	--build-arg UBUNTU_VERSION=24.04 \
 	.
 ```
+
+# Release process
+
+There are two separate workflows:
+
+* `build.yml` builds the deb packages (based on the versions supplied in `VERSIONS.json`) and stores them as artifacfts in the workflow run page. This is triggered on every push.
+
+
+* Additionally, when a tag is pushed, `publish.yml` also builds the packages and:
+   1. Uploads them to the S3 bucket powering https://packaging.ckan.org
+   2. Creates a new GitHub release with the packages attached as assets.
+
+With this, the suggested release process is the following:
+
+* Whenever there is a new CKAN release in the works, or fixes need to be applied to the packages, a new branch and pull request is created. This will trigger the workflows that will create the packages for that version of the code. The `ckan_ref` should be the relvant development branch (e.g. `dev-v2.11`).
+* The packages can be downloded from the workflow page to test locally. Once everthing looks fine the PR is merged.
+* A new tag in the form `vYYYYMMDD` is pushed to trigger the publication of the packages and the creation of the release.

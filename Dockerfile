@@ -104,6 +104,5 @@ RUN DISTRIBUTION=$(lsb_release -c -s) && \
 
 RUN ls -la /output
 
-
 FROM scratch AS export
 COPY --from=builder /output .

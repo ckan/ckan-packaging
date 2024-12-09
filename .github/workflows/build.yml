@@ -1,0 +1,12 @@
+name: CKAN deb packages build workflow
+
+on:  
+  push:
+    branches:
+      - '**'
+    tags-ignore:
+      - v*
+
+jobs:
+  call-build-workflow:
+    uses: ./.github/workflows/reusable-build-package.yml
