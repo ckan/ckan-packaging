@@ -68,6 +68,4 @@ jobs:
         Please check the relevant file in the Assets section below.
         Packages are also available at https://packaging.ckan.org."
 
-        NOTES=$( echo $NOTES | sed 's/^[ \t]*//' )
-
         gh release create ${{ github.ref_name }} ./python-ckan* --verify-tag --notes "$NOTES"
