@@ -8,8 +8,5 @@ on:
       - v*
 
 jobs:
-  test:
-
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "hola" 
+  call-build-workflow:
+    uses: ./.github/workflows/reusable-build-package.yml
