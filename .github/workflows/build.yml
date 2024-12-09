@@ -2,11 +2,12 @@ name: CKAN deb packages build workflow
 
 on:  
   push:
+    branch:
+      - '*'
     tags-ignore:
       - v*
 
 jobs:
-
   test:
 
     runs-on: ubuntu-latest
