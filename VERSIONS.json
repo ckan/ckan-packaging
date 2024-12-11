@@ -1,0 +1,18 @@
+[
+    {
+        "ubuntu_version": "20.04",
+        "ckan_ref": "ckan-2.10.5"
+    },
+    {
+        "ubuntu_version": "22.04",
+        "ckan_ref": "ckan-2.10.5"
+    },
+    {
+        "ubuntu_version": "22.04",
+        "ckan_ref": "ckan-2.11.0"
+    },
+    {
+        "ubuntu_version": "24.04",
+        "ckan_ref": "ckan-2.11.0"
+    }
+]

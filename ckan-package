@@ -1,152 +1,54 @@
 #!/usr/bin/env python
 
-import subprocess
-import re
-import os
-import sys
 import argparse
-
-
-def set_env_vars(version, iteration, datapusher="y", ansible_verbose="vv"):
-
-    os.environ["CKAN_PACKAGE_VERSION"] = version
-    os.environ["CKAN_PACKAGE_ITERATION"] = iteration
-    os.environ["CKAN_PACKAGE_DATAPUSHER"] = datapusher
-    os.environ["CKAN_PACKAGE_ANSIBLE_VERBOSE"] = ansible_verbose
-
-
-def clear_env_vars():
-
-    for key in [
-        "CKAN_PACKAGE_VERSION",
-        "CKAN_PACKAGE_ITERATION",
-        "CKAN_PACKAGE_DATAPUSHER",
-        "CKAN_PACKAGE_ANSIBLE_VERBOSE",
-    ]:
-        if key in os.environ:
-            del os.environ[key]
-
-
-def get_status(out, target):
-    return re.search(target + "\s*(\w+)", out).group(1)
-
-
-def run(target=None):
-
-    status_jammy = None
-    status_focal = None
-
-    print("Checking Vagrant machines status...")
-    out = subprocess.check_output(["vagrant", "status"]).decode("utf8")
-
-    if target is None or target == "focal":
-        status_focal = get_status(out, "focal")
-        print('Machine "focal" is ' + status_focal)
-    if target is None or target == "jammy":
-        status_jammy = get_status(out, "jammy")
-        print('Machine "jammy" is ' + status_jammy)
-
-    if (status_jammy and status_jammy != "running") or (
-        status_focal and status_focal != "running"
-    ):
-        print("Starting up machine(s)")
-        command = ["vagrant", "up", "--provision"]
-    else:
-        print("Machine(s) already started, provisioning")
-        command = ["vagrant", "provision"]
-
-    if target:
-        command.append(target)
-
-    subprocess.call(command)
-
-
-def minor_version(version_string):
-    pattern = r"\D+\D+(?P<capture>\d+\.\d+)"
-    version_number = re.search(pattern, version_string)
-    if version_number:
-        parts = version_number.groups(0)[0].split(".")
-        try:
-            if len(parts) == 3:
-                # ckan-2.8.5
-                return int(parts[1])
-            else:
-                # dev-v2.8
-                return int(parts[-1])
-        except ValueError:
-            pass
-    raise ValueError("Could not parse version number: %s" % version_string)
-
+import json
+import subprocess
+import sys
 
 if __name__ == "__main__":
     description = """Builds CKAN deb packages.
-This script essentially sets up the necessary env vars and calls `vagrant up`
-or `vagrant provision` as appropiate."""
+This script essentially sets up the necessary vars and calls `docker buildx build`."""
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument(
-        "-v",
-        "--version",
-        help="""The CKAN branch or tag to build, eg master, dev-v2.6, release-v2.5.3.
-If not provided you will be propmt for it""",
+        "ref",
+        help="The CKAN branch or tag to build (e.g. master, dev-v2.11, ckan-2.10.6...)",
+    )
+    parser.add_argument(
+        "target", help="The Ubuntu distribution to target (e.g. 20.04, 22.04, 24.04...)"
     )
     parser.add_argument(
         "-i",
         "--iteration",
-        help="""The iteration number to add to the package name.
-If not provided you will be prompt for it""",
+        default="1",
+        help="The iteration number to add to the package name.",
     )
-    parser.add_argument(
-        "-d",
-        "--datapusher",
-        action="store_true",
-        default="y",
-        help="""Whether to add the DataPusher to the package,
-defaults to true""",
-    )
-    parser.add_argument(
-        "-t",
-        "--target",
-        help="""The distribution to target (focal or jammy).
-If omitted, all are built""",
-    )
-    parser.add_argument(
-        "-a",
-        "--ansible-verbose",
-        default="vv",
-        help='Ansible verbosity level, defaults to "vv"',
-    )
-
-    def _check_arg(args, var, prompt):
-        if getattr(args, var):
-            return getattr(args, var)
-        try:
-            var = raw_input("{0}:".format(prompt))
-        except NameError:
-            var = input("{0}:".format(prompt))
-        if not var:
-            print("Please provide a value for the {0}".format(prompt))
-            sys.exit(1)
-        return var
 
     args = parser.parse_args()
 
-    version = _check_arg(args, "version", "CKAN Version (branch or tag)")
-    iteration = _check_arg(args, "iteration", "Iteration")
-    datapusher = args.datapusher
+    ref = args.ref
     target = args.target
+    iteration = args.iteration
 
-    if minor_version(version) < 9:
-        print("This version of the scripts can only package CKAN 2.9 onwards")
+    with open("VERSIONS.json") as f:
+        supported_versions = json.load(f)
+
+    if target not in [v["ubuntu_version"] for v in supported_versions]:
+        print(f"Wrong target: {target}")
         sys.exit(1)
 
-    if target and target not in ("focal", "jammy"):
-        print("Wrong target: " + target)
-        sys.exit(1)
+    command = [
+        "docker",
+        "buildx",
+        "build",
+        "--output",
+        "type=local,dest=.",
+        "--build-arg",
+        f"CKAN_REF={ref}",
+        "--build-arg",
+        f"ITERATION={iteration}",
+        "--build-arg",
+        f"UBUNTU_VERSION={target}",
+        ".",
+    ]
 
-    ansible_verbose = args.ansible_verbose
-
-    set_env_vars(version, iteration, datapusher, ansible_verbose)
-    try:
-        run(target)
-    finally:
-        clear_env_vars()
+    subprocess.call(command)
