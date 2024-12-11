@@ -34,11 +34,11 @@ jobs:
             md5sum $file >> md5sum
 
             # Upload deb file
-            aws s3 cp $file s3://${{ secrets.AWS_BUCKET }}/staging/$file
+            aws s3 cp $file s3://${{ secrets.AWS_BUCKET }}/$file
         done
 
         # Upload updated md5sum file
-        aws s3 cp md5sum s3://${{ secrets.AWS_BUCKET }}/staging/md5sum
+        aws s3 cp md5sum s3://${{ secrets.AWS_BUCKET }}/md5sum
 
   upload-to-release:
     needs: call-build-workflow
