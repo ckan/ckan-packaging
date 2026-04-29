@@ -14,7 +14,7 @@ This script essentially sets up the necessary vars and calls `docker buildx buil
         help="The CKAN branch or tag to build (e.g. master, dev-v2.11, ckan-2.10.6...)",
     )
     parser.add_argument(
-        "target", help="The Ubuntu distribution to target (e.g. 20.04, 22.04, 24.04...)"
+        "target", help="The Ubuntu distribution to target (e.g. 22.04, 24.04...)"
     )
     parser.add_argument(
         "-i",

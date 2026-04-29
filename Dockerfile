@@ -24,8 +24,7 @@ RUN apt-get update -q && \
         nginx
 
 # Install FPM
-RUN if [ "$UBUNTU_VERSION" = "20.04" ] ; then gem install dotenv -v 2.8.1 ; fi && \
-    gem install fpm -- creates=/usr/local/bin/fpm
+RUN gem install fpm -- creates=/usr/local/bin/fpm
 
 # Create dirs
 RUN mkdir -p /etc/ckan/default && \
