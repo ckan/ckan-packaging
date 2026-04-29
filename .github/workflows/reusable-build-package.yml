@@ -10,7 +10,7 @@ jobs:
       versions: ${{ steps.get-versions.outputs.versions }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Get versions to build from VERSIONS file
         id: get-versions
@@ -31,13 +31,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Build package
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           push: false
           outputs: "type=local,dest=."
@@ -55,7 +55,7 @@ jobs:
           dpkg --info $OUTPUT_FILE
 
       - name: Upload deb file
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ env.OUTPUT_FILE }}
           path: ${{ env.OUTPUT_FILE }}
