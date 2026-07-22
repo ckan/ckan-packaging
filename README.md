@@ -19,7 +19,7 @@ usage: ckan-package [-h] [-i ITERATION] ref target
 Builds CKAN deb packages. This script essentially sets up the necessary vars and calls `docker buildx build`.
 
 positional arguments:
-  ref                   The CKAN branch or tag to build (e.g. master, dev-v2.11, ckan-2.10.6...)
+  ref                   The CKAN branch or tag to build (e.g. master, dev-v2.12, ckan-2.10.6...)
   target                The Ubuntu version to target (e.g. 22.04, 24.04...)
 
 optional arguments:
@@ -31,7 +31,7 @@ optional arguments:
 For instance:
 
 	./ckan-package ckan-2.11.1 24.04
-	./ckan-package dev-v2.11 22.04
+	./ckan-package dev-v2.12 22.04
 	./ckan-package master 24.04
 
 The currently supported packages are:
@@ -41,6 +41,7 @@ The currently supported packages are:
 | 2.10         | 22.04 (jammy)  |
 | 2.11         | 22.04 (jammy)  |
 | 2.11         | 24.04 (noble)  |
+| 2.12         | 24.04 (noble)  |
 
 Any other combination is not officially supported, although you might be able to
 build it tweaking the parameters above.
@@ -53,7 +54,7 @@ call it directly using the appropiate build arguments:
 ```
 docker buildx build \
 	--output type=local,dest=.  \
-	--build-arg CKAN_REF=ckan-2.11.0 \
+	--build-arg CKAN_REF=ckan-2.12.0 \
 	--build-arg UBUNTU_VERSION=24.04 \
 	.
 ```
@@ -71,6 +72,6 @@ There are two separate workflows:
 
 With this, the suggested release process is the following:
 
-* Whenever there is a new CKAN release in the works, or fixes need to be applied to the packages, a new branch and pull request is created. This will trigger the workflows that will create the packages for that version of the code. The `ckan_ref` should be the relvant development branch (e.g. `dev-v2.11`).
+* Whenever there is a new CKAN release in the works, or fixes need to be applied to the packages, a new branch and pull request is created. This will trigger the workflows that will create the packages for that version of the code. The `ckan_ref` should be the relvant development branch (e.g. `dev-v2.12`).
 * The packages can be downloded from the workflow page to test locally. Once everthing looks fine the PR is merged.
 * A new tag in the form `vYYYYMMDD` is pushed to trigger the publication of the packages and the creation of the release.

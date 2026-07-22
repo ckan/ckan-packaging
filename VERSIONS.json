@@ -10,5 +10,9 @@
     {
         "ubuntu_version": "24.04",
         "ckan_ref": "ckan-2.11.5"
+    },
+    {
+        "ubuntu_version": "24.04",
+        "ckan_ref": "dev-v2.12"
     }
 ]
