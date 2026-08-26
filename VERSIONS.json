@@ -1,14 +1,18 @@
 [
     {
         "ubuntu_version": "22.04",
-        "ckan_ref": "ckan-2.10.10"
+        "ckan_ref": "ckan-2.10.11"
     },
     {
         "ubuntu_version": "22.04",
-        "ckan_ref": "ckan-2.11.5"
+        "ckan_ref": "ckan-2.11.6"
     },
     {
         "ubuntu_version": "24.04",
-        "ckan_ref": "ckan-2.11.5"
+        "ckan_ref": "ckan-2.11.6"
+    },
+    {
+        "ubuntu_version": "24.04",
+        "ckan_ref": "ckan-2.12.0"
     }
 ]
