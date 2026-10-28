@@ -9,10 +9,10 @@
     },
     {
         "ubuntu_version": "24.04",
-        "ckan_ref": "dev-v2.11"
+        "ckan_ref": "ckan-2.11.7"
     },
     {
         "ubuntu_version": "24.04",
-        "ckan_ref": "dev-v2.12"
+        "ckan_ref": "ckan-2.12.1"
     }
 ]
